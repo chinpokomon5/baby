@@ -1,9 +1,14 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="overflow-x-hidden">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Little Sprout" />
+  <meta name="theme-color" content="#FFF9F5" />
   <title>Little Sprout Journey — Week Milestones & Fetal Size Explorer</title>
+
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Google Fonts: Fredoka for whimsical headers, Plus Jakarta Sans for crisp body -->
@@ -36,9 +41,7 @@
           },
           boxShadow: {
             'storybook': '0 10px 30px -5px rgba(224, 87, 128, 0.12), 0 4px 12px -2px rgba(107, 70, 193, 0.08)',
-            'tactile': '0 5px 0px 0px rgba(224, 87, 128, 0.22)',
-            'tactile-sm': '0 3px 0px 0px rgba(107, 70, 193, 0.18)',
-            'card-glow': '0 14px 34px -8px rgba(244, 162, 97, 0.18)',
+            'sticky-glass': '0 12px 28px -6px rgba(45, 35, 46, 0.12), 0 2px 6px -1px rgba(224, 87, 128, 0.1)',
           }
         }
       }
@@ -53,6 +56,13 @@
       --trim-3: #805AD5;
     }
 
+    html, body {
+      max-width: 100vw;
+      overflow-x: hidden;
+      -webkit-tap-highlight-color: transparent;
+      scroll-behavior: smooth;
+    }
+
     body {
       background-color: var(--bg-cream);
       background-image: 
@@ -62,26 +72,25 @@
         radial-gradient(at 15% 88%, rgba(255, 243, 176, 0.5) 0px, transparent 50%);
       background-attachment: fixed;
       color: #2D232E;
-      overflow-x: hidden;
+      padding-top: env(safe-area-inset-top, 0px);
+      padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 3.5rem);
+      padding-left: env(safe-area-inset-left, 0px);
+      padding-right: env(safe-area-inset-right, 0px);
     }
 
-    /* Floating animations for whimsical vibe */
+    /* Floating & Pop Animations */
     @keyframes floatSlow {
       0%, 100% { transform: translateY(0px) rotate(0deg); }
-      50% { transform: translateY(-9px) rotate(2deg); }
+      50% { transform: translateY(-7px) rotate(2deg); }
     }
     @keyframes pulseGentle {
       0%, 100% { transform: scale(1); }
       50% { transform: scale(1.05); }
     }
     @keyframes popIn {
-      0% { transform: scale(0.82) rotate(-4deg); opacity: 0.4; }
-      65% { transform: scale(1.06) rotate(2deg); opacity: 1; }
+      0% { transform: scale(0.84) rotate(-3deg); opacity: 0.4; }
+      65% { transform: scale(1.05) rotate(1.5deg); opacity: 1; }
       100% { transform: scale(1) rotate(0deg); opacity: 1; }
-    }
-    @keyframes shimmer {
-      0% { background-position: -200% 0; }
-      100% { background-position: 200% 0; }
     }
 
     .animate-float {
@@ -91,15 +100,23 @@
       animation: pulseGentle 3s ease-in-out infinite;
     }
     .animate-pop {
-      animation: popIn 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+      animation: popIn 0.38s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
-    /* Custom Range Scrubber Styling */
+    /* Touch-Optimized Range Scrubber with 44px+ Hit Area */
+    .scrubber-touch-wrapper {
+      position: relative;
+      height: 46px;
+      display: flex;
+      align-items: center;
+      touch-action: pan-y;
+    }
+
     .week-scrubber {
       -webkit-appearance: none;
       appearance: none;
       width: 100%;
-      height: 18px;
+      height: 16px;
       border-radius: 999px;
       background: linear-gradient(
         90deg,
@@ -111,67 +128,63 @@
         #9F7AEA 100%
       );
       outline: none;
-      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.12), 0 2px 0 rgba(255,255,255,0.8);
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.14), 0 2px 0 rgba(255,255,255,0.8);
       cursor: pointer;
-      transition: filter 0.2s;
-    }
-
-    .week-scrubber:hover {
-      filter: brightness(1.03);
+      margin: 0;
     }
 
     .week-scrubber::-webkit-slider-thumb {
       -webkit-appearance: none;
       appearance: none;
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #FFFFFF;
       border: 4px solid #E05780;
-      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.4), 0 0 0 5px rgba(255, 255, 255, 0.65);
       cursor: grab;
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .week-scrubber::-webkit-slider-thumb:hover {
-      transform: scale(1.15);
+      transform: scale(1.12);
     }
 
     .week-scrubber::-webkit-slider-thumb:active {
       cursor: grabbing;
-      transform: scale(0.95);
+      transform: scale(1.05);
+      background: #FFF0F3;
     }
 
     .week-scrubber::-moz-range-thumb {
-      width: 38px;
-      height: 38px;
+      width: 36px;
+      height: 36px;
       border-radius: 50%;
       background: #FFFFFF;
       border: 4px solid #E05780;
-      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.6);
+      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.4), 0 0 0 5px rgba(255, 255, 255, 0.65);
       cursor: grab;
-      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
-    /* Custom Scrollbar for Milestone Ribbon */
+    /* Hidden Scrollbar for Horizontal Touch Snap Ribbon */
+    .no-scrollbar {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+    }
     .no-scrollbar::-webkit-scrollbar {
-      height: 6px;
-    }
-    .no-scrollbar::-webkit-scrollbar-track {
-      background: rgba(255, 214, 224, 0.25);
-      border-radius: 999px;
-    }
-    .no-scrollbar::-webkit-scrollbar-thumb {
-      background: rgba(224, 87, 128, 0.35);
-      border-radius: 999px;
+      display: none;
     }
 
-    /* Tactile button press effect */
+    /* Tactile Button Feedback */
     .btn-tactile {
-      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: transform 0.12s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.15s;
+      touch-action: manipulation;
+      user-select: none;
     }
     .btn-tactile:active {
-      transform: translateY(3px);
+      transform: scale(0.96) translateY(1px);
     }
 
     /* Confetti Canvas */
@@ -182,120 +195,127 @@
       width: 100vw;
       height: 100vh;
       pointer-events: none;
-      z-index: 50;
+      z-index: 60;
     }
 
-    /* Dotted Grid Pattern for Actual Size Visualizer */
+    /* Dotted Grid Pattern for Scale Visualizer */
     .ruler-grid {
-      background-size: 20px 20px;
+      background-size: 18px 18px;
       background-image: 
         linear-gradient(to right, rgba(224, 87, 128, 0.08) 1px, transparent 1px),
         linear-gradient(to bottom, rgba(224, 87, 128, 0.08) 1px, transparent 1px);
     }
+
+    /* Prevent iOS zoom on inputs by ensuring 16px font on small viewports */
+    @media (max-width: 640px) {
+      input[type="date"], input[type="number"], select {
+        font-size: 16px !important;
+      }
+    }
   </style>
 </head>
-<body class="min-h-screen font-sans antialiased selection:bg-blush selection:text-berry pb-16">
+<body class="min-h-screen font-sans antialiased selection:bg-blush selection:text-berry">
 
   <!-- Celebration Confetti Canvas -->
   <canvas id="confetti-canvas"></canvas>
 
   <!-- Decorative Floating Storybook Clouds & Stars (Background) -->
-  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-65">
-    <svg class="absolute top-6 left-[4%] w-28 h-16 text-white animate-float" style="animation-delay: 0s;" viewBox="0 0 120 70" fill="currentColor">
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-60">
+    <svg class="absolute top-4 left-[3%] w-24 sm:w-28 h-14 sm:h-16 text-white animate-float" viewBox="0 0 120 70" fill="currentColor">
       <path d="M35,55 L90,55 C103,55 112,46 112,35 C112,25 104,17 94,16 C90,6 79,0 67,0 C51,0 38,11 35,26 C22,27 12,37 12,49 C12,52 13,55 15,55 Z"/>
     </svg>
-    <svg class="absolute top-16 right-[6%] w-36 h-20 text-white animate-float" style="animation-delay: 1.8s;" viewBox="0 0 120 70" fill="currentColor">
+    <svg class="absolute top-12 right-[5%] w-28 sm:w-36 h-16 sm:h-20 text-white animate-float" style="animation-delay: 1.8s;" viewBox="0 0 120 70" fill="currentColor">
       <path d="M35,55 L90,55 C103,55 112,46 112,35 C112,25 104,17 94,16 C90,6 79,0 67,0 C51,0 38,11 35,26 C22,27 12,37 12,49 C12,52 13,55 15,55 Z"/>
     </svg>
-    <div class="absolute top-36 left-[12%] text-amber-300 text-2xl animate-pulse-gentle">✦</div>
-    <div class="absolute top-24 right-[22%] text-pink-300 text-xl animate-pulse-gentle" style="animation-delay: 1s;">★</div>
-    <div class="absolute bottom-20 left-[8%] text-purple-300 text-2xl animate-pulse-gentle" style="animation-delay: 1.5s;">✦</div>
+    <div class="absolute top-36 left-[10%] text-amber-300 text-xl animate-pulse-gentle">✦</div>
+    <div class="absolute top-24 right-[20%] text-pink-300 text-lg animate-pulse-gentle" style="animation-delay: 1s;">★</div>
   </div>
 
   <!-- Main Content Container -->
-  <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8">
+  <div class="relative z-10 max-w-6xl mx-auto px-3 sm:px-6 pt-3 sm:pt-6">
 
     <!-- Top Header & Summary Banner -->
-    <header class="bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook mb-6">
-      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+    <header class="bg-white/90 backdrop-blur-md rounded-3xl p-4 sm:p-6 border-2 border-pink-100 shadow-storybook mb-4 sm:mb-5">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3.5">
         
         <!-- Brand & Title -->
-        <div class="flex items-start sm:items-center gap-4">
-          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blush via-peach to-butter flex items-center justify-center text-3xl sm:text-4xl shadow-sm border-2 border-white shrink-0 animate-float">
+        <div class="flex items-center gap-3 sm:gap-4">
+          <div class="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blush via-peach to-butter flex items-center justify-center text-2xl sm:text-4xl shadow-sm border-2 border-white shrink-0 animate-float">
             🌱
           </div>
-          <div>
-            <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-pink-50 border border-pink-200 text-berry text-xs font-bold tracking-wide uppercase mb-1">
+          <div class="min-w-0">
+            <div class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-pink-50 border border-pink-200 text-berry text-[10px] sm:text-xs font-bold tracking-wide uppercase mb-0.5">
               <i class="ph-fill ph-sparkle"></i>
-              <span>Interactive Pregnancy Story & Size Explorer</span>
+              <span>Interactive Pregnancy Story &amp; Size Explorer</span>
             </div>
-            <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 tracking-tight">
+            <h1 class="font-display text-xl sm:text-3xl md:text-4xl font-bold text-slate-800 tracking-tight leading-tight">
               Inspect Week Milestones &amp; Fetal Size
             </h1>
-            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
-              Anchored at <span id="header-anchor-summary" class="font-semibold text-slate-700">19w 0d on Tue, Oct 13, 2026</span> • Scrub any week to explore baby’s whimsical size &amp; milestones!
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5 leading-snug">
+              Anchored at <span id="header-anchor-summary" class="font-semibold text-slate-700">19w 0d on Tue, Oct 13, 2026</span> • Due <span id="header-edd-inline" class="font-semibold text-berry">Tue, Mar 9, 2027</span>
             </p>
           </div>
         </div>
 
-        <!-- Action Controls: Sound, Customize Timing, Reset to 19w0d -->
-        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
-          <button id="btn-jump-anchor" onclick="jumpToAnchorWeek()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-pink-50 hover:bg-pink-100 text-berry font-display font-semibold text-sm border border-pink-200 shadow-sm">
-            <i class="ph-fill ph-push-pin"></i>
-            <span>Oct 13 (19w 0d)</span>
+        <!-- Touch-Friendly Action Controls (Min 44px height) -->
+        <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-2">
+          <button id="btn-jump-anchor" onclick="jumpToAnchorWeek()" class="btn-tactile min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-pink-50 hover:bg-pink-100 text-berry font-display font-semibold text-xs sm:text-sm border border-pink-200 shadow-sm">
+            <i class="ph-fill ph-push-pin shrink-0"></i>
+            <span class="truncate">Oct 13 (19w 0d)</span>
           </button>
 
-          <button id="btn-jump-today" onclick="jumpToLiveToday()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-display font-semibold text-sm border border-amber-200 shadow-sm" title="Jump to current calendar date">
-            <i class="ph-fill ph-calendar-star"></i>
-            <span>Live Today</span>
+          <button id="btn-jump-today" onclick="jumpToLiveToday()" class="btn-tactile min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-display font-semibold text-xs sm:text-sm border border-amber-200 shadow-sm" title="Jump to current calendar date">
+            <i class="ph-fill ph-calendar-star shrink-0"></i>
+            <span class="truncate">Live Today</span>
           </button>
 
-          <button id="btn-toggle-settings" onclick="toggleTimingDrawer()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-purple-50 hover:bg-purple-100 text-plum font-display font-semibold text-sm border border-purple-200 shadow-sm">
-            <i class="ph-bold ph-sliders-horizontal"></i>
-            <span>Customize Timing</span>
+          <button id="btn-toggle-settings" onclick="toggleTimingDrawer()" class="btn-tactile min-h-[44px] inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-2xl bg-purple-50 hover:bg-purple-100 text-plum font-display font-semibold text-xs sm:text-sm border border-purple-200 shadow-sm">
+            <i class="ph-bold ph-sliders-horizontal shrink-0"></i>
+            <span class="truncate">Timing Setup</span>
           </button>
 
-          <button id="btn-sound-toggle" onclick="toggleSound()" class="btn-tactile w-10 h-10 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center border border-slate-200 shadow-sm" title="Toggle gentle sound effects">
+          <button id="btn-sound-toggle" onclick="toggleSound()" class="btn-tactile min-h-[44px] min-w-[44px] px-3 sm:px-0 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center gap-1.5 border border-slate-200 shadow-sm" title="Toggle gentle sound effects">
             <i id="sound-icon" class="ph-fill ph-speaker-high text-lg text-berry"></i>
+            <span class="sm:hidden font-display font-semibold text-xs text-slate-700" id="sound-label-mobile">Sound On</span>
           </button>
         </div>
       </div>
 
       <!-- Collapsible Customize Timing Drawer -->
-      <div id="timing-drawer" class="hidden mt-5 pt-5 border-t-2 border-dashed border-pink-100 animate-pop">
-        <div class="bg-gradient-to-r from-pink-50/70 via-purple-50/50 to-amber-50/70 rounded-2xl p-4 border border-pink-100">
-          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div id="timing-drawer" class="hidden mt-4 pt-4 border-t-2 border-dashed border-pink-100 animate-pop">
+        <div class="bg-gradient-to-r from-pink-50/70 via-purple-50/50 to-amber-50/70 rounded-2xl p-3.5 sm:p-4 border border-pink-100">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-3">
             <div>
-              <h3 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
-                <i class="ph-fill ph-clock-Afternoon text-berry"></i>
+              <h3 class="font-display font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2">
+                <i class="ph-fill ph-clock-afternoon text-berry"></i>
                 Calibrate Anchor Reference Date &amp; Gestational Age
               </h3>
               <p class="text-xs text-slate-600 mt-0.5">
                 Default is calibrated so <strong class="text-berry">19 weeks, 0 days</strong> falls on <strong class="text-berry">Tuesday, October 13, 2026</strong> (Expected Due Date: <strong class="text-plum">Tuesday, March 9, 2027</strong>).
               </p>
             </div>
-            <button onclick="resetToDefaultCalibration()" class="btn-tactile self-start md:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-pink-50 text-berry border border-pink-200 text-xs font-bold shadow-sm">
+            <button onclick="resetToDefaultCalibration()" class="btn-tactile min-h-[44px] self-start md:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-pink-50 text-berry border border-pink-200 text-xs font-bold shadow-sm">
               <i class="ph-bold ph-arrow-counter-clockwise"></i>
               Reset to 19w 0d on Oct 13, 2026
             </button>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-3.5">
             <div class="bg-white p-3 rounded-xl border border-pink-100">
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Reference Date</label>
-              <input type="date" id="input-ref-date" value="2026-10-13" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+              <label for="input-ref-date" class="block text-xs font-bold text-slate-500 uppercase mb-1">Reference Date</label>
+              <input type="date" id="input-ref-date" value="2026-10-13" onchange="updateCustomCalibration()" class="w-full min-h-[44px] font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-berry" />
             </div>
             <div class="bg-white p-3 rounded-xl border border-pink-100">
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Weeks on Reference Date</label>
+              <label for="input-ref-weeks" class="block text-xs font-bold text-slate-500 uppercase mb-1">Weeks on Reference Date</label>
               <div class="flex items-center gap-2">
-                <input type="number" id="input-ref-weeks" min="1" max="40" value="19" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+                <input type="number" id="input-ref-weeks" min="1" max="40" value="19" onchange="updateCustomCalibration()" class="w-full min-h-[44px] font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-berry" />
                 <span class="text-xs font-bold text-slate-400">wks</span>
               </div>
             </div>
             <div class="bg-white p-3 rounded-xl border border-pink-100">
-              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Extra Days (0–6)</label>
+              <label for="input-ref-days" class="block text-xs font-bold text-slate-500 uppercase mb-1">Extra Days (0–6)</label>
               <div class="flex items-center gap-2">
-                <input type="number" id="input-ref-days" min="0" max="6" value="0" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+                <input type="number" id="input-ref-days" min="0" max="6" value="0" onchange="updateCustomCalibration()" class="w-full min-h-[44px] font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-berry" />
                 <span class="text-xs font-bold text-slate-400">days</span>
               </div>
             </div>
@@ -303,110 +323,124 @@
         </div>
       </div>
 
-      <!-- 4 Key Timing Ribbon Cards (Always Visible) -->
-      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+      <!-- 4 Key Timing Ribbon Cards -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-3 mt-4">
         <!-- Card 1: Expected Due Date -->
-        <div class="bg-gradient-to-br from-pink-50 to-rose-50/60 rounded-2xl p-3.5 border border-pink-200/80 flex items-center gap-3">
-          <div class="w-11 h-11 rounded-xl bg-white text-berry flex items-center justify-center text-2xl shadow-sm shrink-0">
+        <div class="bg-gradient-to-br from-pink-50 to-rose-50/60 rounded-2xl p-3 border border-pink-200/80 flex items-center gap-2.5 sm:gap-3">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white text-berry flex items-center justify-center text-xl sm:text-2xl shadow-sm shrink-0">
             🎂
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-berry/80">Expected Due Date (40w)</div>
-            <div id="metric-edd" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">Tue, Mar 9, 2027</div>
-            <div id="metric-edd-sub" class="text-[11px] text-slate-500">Full 280-day journey</div>
+            <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-berry/80 truncate">Due Date (40w)</div>
+            <div id="metric-edd" class="font-display text-sm sm:text-lg font-bold text-slate-800 truncate">Tue, Mar 9, 2027</div>
+            <div id="metric-edd-sub" class="text-[10px] sm:text-[11px] text-slate-500 truncate">Full 280-day journey</div>
           </div>
         </div>
 
         <!-- Card 2: Anchor / Inspected Date -->
-        <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 rounded-2xl p-3.5 border border-amber-200/80 flex items-center gap-3">
-          <div class="w-11 h-11 rounded-xl bg-white text-amber-600 flex items-center justify-center text-2xl shadow-sm shrink-0">
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 rounded-2xl p-3 border border-amber-200/80 flex items-center gap-2.5 sm:gap-3">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white text-amber-600 flex items-center justify-center text-xl sm:text-2xl shadow-sm shrink-0">
             🗓️
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700/80">Inspected Gestation</div>
-            <div id="metric-inspected-age" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">19 Weeks, 0 Days</div>
-            <div id="metric-inspected-date" class="text-[11px] text-slate-600 font-medium truncate">Tue, Oct 13, 2026</div>
+            <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-700/80 truncate">Inspected Age</div>
+            <div id="metric-inspected-age" class="font-display text-sm sm:text-lg font-bold text-slate-800 truncate">19 Weeks, 0 Days</div>
+            <div id="metric-inspected-date" class="text-[10px] sm:text-[11px] text-slate-600 font-medium truncate">Tue, Oct 13, 2026</div>
           </div>
         </div>
 
         <!-- Card 3: Journey Begins (LMP) & Conception -->
-        <div class="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-2xl p-3.5 border border-emerald-200/80 flex items-center gap-3">
-          <div class="w-11 h-11 rounded-xl bg-white text-emerald-600 flex items-center justify-center text-2xl shadow-sm shrink-0">
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-2xl p-3 border border-emerald-200/80 flex items-center gap-2.5 sm:gap-3">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white text-emerald-600 flex items-center justify-center text-xl sm:text-2xl shadow-sm shrink-0">
             🌱
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700/80">LMPStart (Week 0, Day 0)</div>
-            <div id="metric-lmp" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">Tue, Jun 2, 2026</div>
-            <div id="metric-conception" class="text-[11px] text-slate-500 truncate">Conception: ~Jun 16, 2026</div>
+            <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-700/80 truncate">LMP (Wk 0, Day 0)</div>
+            <div id="metric-lmp" class="font-display text-sm sm:text-lg font-bold text-slate-800 truncate">Tue, Jun 2, 2026</div>
+            <div id="metric-conception" class="text-[10px] sm:text-[11px] text-slate-500 truncate">Conception: Jun 16</div>
           </div>
         </div>
 
         <!-- Card 4: Countdown to Due Date -->
-        <div class="bg-gradient-to-br from-purple-50 to-indigo-50/60 rounded-2xl p-3.5 border border-purple-200/80 flex items-center gap-3">
-          <div class="w-11 h-11 rounded-xl bg-white text-plum flex items-center justify-center text-2xl shadow-sm shrink-0">
+        <div class="bg-gradient-to-br from-purple-50 to-indigo-50/60 rounded-2xl p-3 border border-purple-200/80 flex items-center gap-2.5 sm:gap-3">
+          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-white text-plum flex items-center justify-center text-xl sm:text-2xl shadow-sm shrink-0">
             ⏳
           </div>
           <div class="min-w-0">
-            <div class="text-[11px] font-bold uppercase tracking-wider text-plum/80">Countdown from Selected</div>
-            <div id="metric-countdown" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">21w 0d Left</div>
-            <div id="metric-progress-pct" class="text-[11px] text-slate-600 font-medium truncate">147 days to go • 47.5% done</div>
+            <div class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-plum/80 truncate">Countdown</div>
+            <div id="metric-countdown" class="font-display text-sm sm:text-lg font-bold text-slate-800 truncate">21w 0d Left</div>
+            <div id="metric-progress-pct" class="text-[10px] sm:text-[11px] text-slate-600 font-medium truncate">147d left • 47.5%</div>
           </div>
         </div>
       </div>
     </header>
 
-    <!-- MASTER WEEK SCRUBBER & QUICK-JUMP MILESTONE CONTROL -->
-    <section class="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook mb-6">
+    <!-- STICKY MOBILE-FIRST MASTER WEEK SCRUBBER & TOUCH CONTROLS -->
+    <section id="sticky-scrubber-panel" class="sticky top-2 z-40 bg-white/95 backdrop-blur-xl rounded-3xl p-3.5 sm:p-6 border-2 border-pink-200/90 shadow-sticky-glass mb-5 transition-all duration-200">
       
-      <!-- Top Row of Scrubber: Week Title, Trimester Pill, Step & Auto-Play Buttons -->
-      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
-        <div class="flex flex-wrap items-center gap-2.5">
-          <span class="font-display text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
-            <i class="ph-fill ph-compass text-berry"></i>
-            Master Timeline Scrubber
+      <!-- Compact Sticky Top Bar: Current Week Readout + One-Handed -1w / Auto-Play / +1w Buttons -->
+      <div class="flex flex-wrap items-center justify-between gap-2 mb-2.5 sm:mb-4">
+        <div class="flex items-center gap-2 min-w-0">
+          <span id="sticky-live-emoji" class="w-10 h-10 rounded-2xl bg-pink-50 border border-pink-200 flex items-center justify-center text-2xl shadow-sm shrink-0">
+            🍅
           </span>
-          <span id="trimester-pill" class="px-3.5 py-1 rounded-full text-xs font-display font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-sm">
-            ✨ 2nd Trimester (Weeks 14–27)
-          </span>
+          <div class="min-w-0">
+            <div class="flex items-center gap-1.5 flex-wrap">
+              <span id="sticky-week-title" class="font-display text-lg sm:text-2xl font-bold text-slate-800 leading-none">
+                Week 19, Day 0
+              </span>
+              <span id="trimester-pill" class="px-2.5 py-0.5 rounded-full text-[11px] font-display font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                2nd Tri
+              </span>
+            </div>
+            <div id="sticky-date-subtitle" class="text-xs font-semibold text-berry truncate mt-0.5">
+              Tue, Oct 13, 2026 • Heirloom Tomato (15.3 cm)
+            </div>
+          </div>
         </div>
 
-        <!-- Step & Story Controls -->
-        <div class="flex items-center gap-2 self-start sm:self-auto">
-          <button onclick="stepWeek(-1)" class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-pink-50 hover:text-berry text-slate-700 font-display font-bold text-sm border border-slate-200 flex items-center gap-1 shadow-sm" title="Previous Week (Left Arrow)">
-            <i class="ph-bold ph-caret-left"></i>
-            <span>-1 Wk</span>
+        <!-- One-Handed Thumb Stepper & Auto-Play Buttons (All >= 44px touch height) -->
+        <div class="flex items-center gap-1.5 sm:gap-2 ml-auto">
+          <button onclick="stepWeek(-1)" class="btn-tactile min-h-[44px] min-w-[48px] px-3 py-2 rounded-2xl bg-slate-100 hover:bg-pink-50 active:bg-pink-100 text-slate-800 hover:text-berry font-display font-bold text-xs sm:text-sm border border-slate-200/90 flex items-center justify-center gap-1 shadow-sm" aria-label="Previous Week">
+            <i class="ph-bold ph-caret-left text-sm"></i>
+            <span>-1w</span>
           </button>
 
-          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="btn-tactile px-4 py-2 rounded-xl bg-gradient-to-r from-berry to-pink-500 hover:from-pink-600 hover:to-berry text-white font-display font-bold text-sm flex items-center gap-1.5 shadow-md">
-            <i id="autoplay-icon" class="ph-fill ph-play"></i>
-            <span id="autoplay-text">Auto-Play Story</span>
+          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="btn-tactile min-h-[44px] px-3.5 sm:px-4 py-2 rounded-2xl bg-gradient-to-r from-berry to-pink-500 hover:from-pink-600 hover:to-berry text-white font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-md">
+            <i id="autoplay-icon" class="ph-fill ph-play text-sm"></i>
+            <span id="autoplay-text">Story</span>
           </button>
 
-          <button onclick="stepWeek(1)" class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-pink-50 hover:text-berry text-slate-700 font-display font-bold text-sm border border-slate-200 flex items-center gap-1 shadow-sm" title="Next Week (Right Arrow)">
-            <span>+1 Wk</span>
-            <i class="ph-bold ph-caret-right"></i>
+          <button onclick="stepWeek(1)" class="btn-tactile min-h-[44px] min-w-[48px] px-3 py-2 rounded-2xl bg-slate-100 hover:bg-pink-50 active:bg-pink-100 text-slate-800 hover:text-berry font-display font-bold text-xs sm:text-sm border border-slate-200/90 flex items-center justify-center gap-1 shadow-sm" aria-label="Next Week">
+            <span>+1w</span>
+            <i class="ph-bold ph-caret-right text-sm"></i>
+          </button>
+
+          <!-- Mobile Drawer Collapse Toggle so users on tiny screens can collapse extra trays if desired -->
+          <button id="btn-collapse-trays" onclick="toggleMobileScrubberTrays()" class=" lg:hidden btn-tactile min-h-[44px] min-w-[44px] rounded-2xl bg-pink-50 text-berry border border-pink-200 flex items-center justify-center shadow-sm" title="Show/Hide Day Pills & Milestones">
+            <i id="collapse-trays-icon" class="ph-bold ph-caret-up text-base"></i>
           </button>
         </div>
       </div>
 
       <!-- Trimester Zone Labels Above Slider -->
-      <div class="grid grid-cols-3 text-[11px] sm:text-xs font-display font-bold mb-2 px-1">
-        <div class="text-pink-600 flex items-center gap-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-pink-400 inline-block"></span>
-          1st Trimester (Wks 1–13)
+      <div class="grid grid-cols-3 text-[10px] sm:text-xs font-display font-bold mb-1 px-1">
+        <div class="text-pink-600 flex items-center gap-1 truncate">
+          <span class="w-2 h-2 rounded-full bg-pink-400 shrink-0"></span>
+          <span>1st Tri (W1–13)</span>
         </div>
-        <div class="text-amber-600 text-center flex items-center justify-center gap-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
-          2nd Trimester (Wks 14–27)
+        <div class="text-amber-600 text-center flex items-center justify-center gap-1 truncate">
+          <span class="w-2 h-2 rounded-full bg-amber-400 shrink-0"></span>
+          <span>2nd Tri (W14–27)</span>
         </div>
-        <div class="text-purple-600 text-right flex items-center justify-end gap-1">
-          <span class="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span>
-          3rd Trimester (Wks 28–40)
+        <div class="text-purple-600 text-right flex items-center justify-end gap-1 truncate">
+          <span class="w-2 h-2 rounded-full bg-purple-400 shrink-0"></span>
+          <span>3rd Tri (W28–40)</span>
         </div>
       </div>
 
       <!-- The Main Tactile Range Slider (Weeks 1 to 40) -->
-      <div class="relative py-2">
+      <div class="scrubber-touch-wrapper">
         <input
           id="week-slider"
           type="range"
@@ -417,79 +451,91 @@
           oninput="onWeekSliderInput(this.value)"
           aria-label="Inspect pregnancy week from 1 to 40"
         />
-        <!-- Week Ticks Under Slider -->
-        <div class="flex justify-between text-[10px] sm:text-xs font-bold text-slate-400 mt-2 px-1 select-none">
-          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(1)">Wk 1</span>
-          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(6)">Wk 6 💓</span>
-          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(14)">Wk 14 🌸</span>
-          <span class="cursor-pointer text-berry font-extrabold" onclick="setInspectWeek(19)">Wk 19 🥭</span>
-          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(20)">Wk 20 🎉</span>
-          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(28)">Wk 28 🧸</span>
-          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(37)">Wk 37 🐣</span>
-          <span class="cursor-pointer hover:text-plum text-plum" onclick="setInspectWeek(40)">Wk 40 🎂</span>
-        </div>
       </div>
 
-      <!-- Day-Within-Week Selector (+0d to +6d) -->
-      <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div class="flex items-center gap-2">
-          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">
-            Fine-Tune Day of Week <span id="day-selector-week-label" class="text-berry">(Week 19)</span>:
-          </span>
-        </div>
-        <div id="day-pills-container" class="grid grid-cols-7 gap-1.5 sm:gap-2 w-full md:w-auto">
-          <!-- Dynamically populated +0d to +6d pills with exact dates -->
-        </div>
+      <!-- Week Ticks Under Slider -->
+      <div class="flex justify-between text-[10px] sm:text-xs font-bold text-slate-400 px-1 select-none">
+        <button type="button" class="py-1 hover:text-berry" onclick="setInspectWeek(1)">W1</button>
+        <button type="button" class="py-1 hover:text-berry hidden sm:inline" onclick="setInspectWeek(6)">W6 💓</button>
+        <button type="button" class="py-1 hover:text-berry" onclick="setInspectWeek(14)">W14 🌸</button>
+        <button type="button" class="py-1 text-berry font-extrabold" onclick="setInspectWeek(19)">W19 🥭</button>
+        <button type="button" class="py-1 hover:text-berry" onclick="setInspectWeek(20)">W20 🎉</button>
+        <button type="button" class="py-1 hover:text-berry" onclick="setInspectWeek(28)">W28 🧸</button>
+        <button type="button" class="py-1 hover:text-berry hidden sm:inline" onclick="setInspectWeek(37)">W37 🐣</button>
+        <button type="button" class="py-1 text-plum font-bold" onclick="setInspectWeek(40)">W40 🎂</button>
       </div>
 
-      <!-- Quick-Jump Milestone Ribbon -->
-      <div class="mt-5 pt-4 border-t border-slate-100">
-        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center justify-between">
-          <span>✨ Quick-Jump Key Pregnancy Milestones</span>
-          <span class="text-[11px] font-normal text-slate-400 hidden sm:inline">Click any chip to inspect</span>
+      <!-- Collapsible Mobile Tray: 7-Column Touch Day Pills (+0d to +6d) & Horizontal Snap Milestone Ribbon -->
+      <div id="scrubber-expandable-trays" class="mt-3 pt-3 border-t border-slate-100 space-y-3">
+        
+        <!-- 7-Column Day-Within-Week Selector (Each pill >= 44px height) -->
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-2">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+            <span>Tap Day of Week <strong id="day-selector-week-label" class="text-berry">(Week 19)</strong>:</span>
+            <span id="day-selector-active-date" class="md:hidden text-berry font-display">Tue, Oct 13, 2026</span>
+          </div>
+          <div id="day-pills-container" class="grid grid-cols-7 gap-1 sm:gap-2 w-full md:w-auto">
+            <!-- Dynamically populated +0d to +6d pills with min-h-[44px] -->
+          </div>
         </div>
-        <div id="milestone-ribbon" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
-          <!-- Populated dynamically with exact calculated dates -->
+
+        <!-- Horizontal Touch-Scrollable Snap Milestone Ribbon (Wraps on Desktop, Swipeable on Mobile) -->
+        <div class="pt-2 border-t border-slate-100">
+          <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center justify-between">
+            <span>✨ Quick-Jump Key Milestones</span>
+            <span class="text-[10px] font-semibold text-berry/80 lg:hidden">Swipe ribbon ➔</span>
+          </div>
+          <div id="milestone-ribbon" class="flex lg:flex-wrap items-center gap-2 overflow-x-auto lg:overflow-visible snap-x snap-mandatory no-scrollbar -mx-1 px-1 pb-1">
+            <!-- Populated dynamically with exact calculated dates -->
+          </div>
         </div>
       </div>
     </section>
 
     <!-- MAIN INSPECTOR STAGE: LEFT = WHIMSICAL SIZE SHOWCASE, RIGHT = MILESTONE & CALENDAR DETAILS -->
-    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 sm:gap-6 mb-6">
       
-      <!-- LEFT COLUMN (5 cols): Interactive Whimsical Size Showcase & Actual Scale Visualizer -->
-      <div class="lg:col-span-5 flex flex-col gap-6">
+      <!-- LEFT COLUMN (5 cols): Touch-Swipeable Whimsical Size Showcase & Side-by-Side Scale Visualizer -->
+      <div class="lg:col-span-5 flex flex-col gap-5 sm:gap-6">
         
-        <!-- Whimsical Size Comparison Stage Card -->
-        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook relative overflow-hidden flex flex-col justify-between">
+        <!-- Whimsical Size Comparison Stage Card (Supports Left/Right Touch Swipe!) -->
+        <div id="size-showcase-card" class="bg-white rounded-3xl p-4 sm:p-6 border-2 border-pink-100 shadow-storybook relative overflow-hidden flex flex-col justify-between select-none">
           
-          <!-- Category Theme Switcher (Fruits & Veggies / Sweet Bakery / Curiosities) -->
+          <!-- Category Theme Switcher (Produce / Sweet Bakery / Whimsy) with min-h-[44px] -->
           <div class="relative z-10">
-            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 text-center mb-2">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-slate-400 text-center mb-2">
               Choose Comparison Theme
             </div>
-            <div class="grid grid-cols-3 gap-1.5 bg-pink-50/70 p-1.5 rounded-2xl border border-pink-100">
-              <button id="theme-btn-produce" onclick="setComparisonTheme('produce')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200">
+            <div class="grid grid-cols-3 gap-1.5 bg-pink-50/80 p-1.5 rounded-2xl border border-pink-100">
+              <button id="theme-btn-produce" onclick="setComparisonTheme('produce')" class="btn-tactile min-h-[44px] py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200">
                 <span>🥭</span>
                 <span>Produce</span>
               </button>
-              <button id="theme-btn-bakery" onclick="setComparisonTheme('bakery')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
+              <button id="theme-btn-bakery" onclick="setComparisonTheme('bakery')" class="btn-tactile min-h-[44px] py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
                 <span>🥐</span>
                 <span>Bakery</span>
               </button>
-              <button id="theme-btn-curiosity" onclick="setComparisonTheme('curiosity')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
+              <button id="theme-btn-curiosity" onclick="setComparisonTheme('curiosity')" class="btn-tactile min-h-[44px] py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
                 <span>🧸</span>
                 <span>Whimsy</span>
               </button>
             </div>
           </div>
 
-          <!-- Centerpiece Animated Illustration Stage -->
-          <div class="my-6 flex flex-col items-center justify-center text-center relative">
+          <!-- Centerpiece Animated Illustration Stage (Touch-Swipe Zone) -->
+          <div id="swipe-stage-zone" class="my-5 flex flex-col items-center justify-center text-center relative cursor-grab active:cursor-grabbing">
+            <!-- Quick Left/Right Tap Arrows flanking the circle on mobile -->
+            <button onclick="stepWeek(-1)" aria-label="Previous week" class="btn-tactile absolute left-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-pink-50/90 hover:bg-pink-100 text-berry border border-pink-200 flex items-center justify-center shadow-sm z-20">
+              <i class="ph-bold ph-caret-left"></i>
+            </button>
+
+            <button onclick="stepWeek(1)" aria-label="Next week" class="btn-tactile absolute right-0 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-pink-50/90 hover:bg-pink-100 text-berry border border-pink-200 flex items-center justify-center shadow-sm z-20">
+              <i class="ph-bold ph-caret-right"></i>
+            </button>
+
             <!-- Soft glowing backdrop circle -->
-            <div id="stage-glow-circle" class="w-44 h-44 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-pink-100 via-amber-50 to-purple-100 flex items-center justify-center shadow-inner border-4 border-white relative">
-              <!-- Dynamic SVG / Emoji Art Badge -->
-              <div id="size-hero-visual" class="select-none transition-transform duration-300">
+            <div id="stage-glow-circle" class="w-40 h-40 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-pink-100 via-amber-50 to-purple-100 flex items-center justify-center shadow-inner border-4 border-white relative transition-transform duration-200">
+              <div id="size-hero-visual" class="select-none">
                 <!-- Populated by JS -->
               </div>
               <!-- Floating Week Badge -->
@@ -499,101 +545,127 @@
             </div>
 
             <!-- Size Title & Subtitle -->
-            <div class="mt-4">
-              <div class="text-xs font-bold uppercase tracking-widest text-berry/80" id="size-category-label">
+            <div class="mt-3.5 px-2">
+              <div class="text-[11px] font-bold uppercase tracking-widest text-berry/80" id="size-category-label">
                 At Week 19, Baby is the size of an...
               </div>
-              <h2 id="size-hero-title" class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-0.5">
+              <h2 id="size-hero-title" class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-0.5 leading-tight">
                 Heirloom Tomato
               </h2>
-              <p id="size-hero-blurb" class="text-xs sm:text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+              <p id="size-hero-blurb" class="text-xs text-slate-500 mt-1 max-w-xs mx-auto leading-relaxed">
                 Also comparable to a juicy mango, a berry tart, or a cozy hedgehog!
               </p>
+            </div>
+
+            <!-- Subtle Mobile Swipe Gesture Hint -->
+            <div class="mt-2.5 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-slate-100/80 text-slate-500 text-[11px] font-semibold">
+              <i class="ph-bold ph-hand-swipe-left text-berry text-xs"></i>
+              <span>Swipe card or drag slider to change week</span>
             </div>
           </div>
 
           <!-- Mini Trio Strip: See all 3 comparisons at a glance -->
-          <div class="grid grid-cols-3 gap-2 pt-4 border-t border-pink-100 text-center">
-            <div onclick="setComparisonTheme('produce')" class="cursor-pointer p-2.5 rounded-2xl bg-rose-50/60 hover:bg-rose-100/70 border border-rose-100 transition">
+          <div class="grid grid-cols-3 gap-2 pt-3.5 border-t border-pink-100 text-center">
+            <button type="button" onclick="setComparisonTheme('produce')" class="btn-tactile min-h-[64px] p-2 rounded-2xl bg-rose-50/60 hover:bg-rose-100/70 border border-rose-100 transition flex flex-col items-center justify-center">
               <div id="trio-produce-emoji" class="text-xl mb-0.5">🍅</div>
-              <div class="text-[10px] font-bold uppercase text-rose-500">Patch</div>
-              <div id="trio-produce-name" class="font-display font-bold text-xs text-slate-800 truncate">Heirloom Tomato</div>
-            </div>
-            <div onclick="setComparisonTheme('bakery')" class="cursor-pointer p-2.5 rounded-2xl bg-amber-50/60 hover:bg-amber-100/70 border border-amber-100 transition">
+              <div class="text-[9px] font-bold uppercase text-rose-500">Produce</div>
+              <div id="trio-produce-name" class="font-display font-bold text-[11px] text-slate-800 line-clamp-1">Heirloom Tomato</div>
+            </button>
+            <button type="button" onclick="setComparisonTheme('bakery')" class="btn-tactile min-h-[64px] p-2 rounded-2xl bg-amber-50/60 hover:bg-amber-100/70 border border-amber-100 transition flex flex-col items-center justify-center">
               <div id="trio-bakery-emoji" class="text-xl mb-0.5">🥧</div>
-              <div class="text-[10px] font-bold uppercase text-amber-600">Bakery</div>
-              <div id="trio-bakery-name" class="font-display font-bold text-xs text-slate-800 truncate">Fresh Berry Tart</div>
-            </div>
-            <div onclick="setComparisonTheme('curiosity')" class="cursor-pointer p-2.5 rounded-2xl bg-purple-50/60 hover:bg-purple-100/70 border border-purple-100 transition">
+              <div class="text-[9px] font-bold uppercase text-amber-600">Bakery</div>
+              <div id="trio-bakery-name" class="font-display font-bold text-[11px] text-slate-800 line-clamp-1">Artisanal Berry Tart</div>
+            </button>
+            <button type="button" onclick="setComparisonTheme('curiosity')" class="btn-tactile min-h-[64px] p-2 rounded-2xl bg-purple-50/60 hover:bg-purple-100/70 border border-purple-100 transition flex flex-col items-center justify-center">
               <div id="trio-curiosity-emoji" class="text-xl mb-0.5">🦔</div>
-              <div class="text-[10px] font-bold uppercase text-purple-600">Whimsy</div>
-              <div id="trio-curiosity-name" class="font-display font-bold text-xs text-slate-800 truncate">Baby Hedgehog</div>
-            </div>
+              <div class="text-[9px] font-bold uppercase text-purple-600">Whimsy</div>
+              <div id="trio-curiosity-name" class="font-display font-bold text-[11px] text-slate-800 line-clamp-1">Storybook Hedgehog</div>
+            </button>
           </div>
 
           <!-- Length & Weight Pill Readout with Metric/Imperial Toggle -->
           <div class="mt-4 bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
             <div class="flex items-center justify-between mb-2">
               <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
-                <i class="ph-fill ph-ruler text-berry"></i> Estimated Measurements
+                <i class="ph-fill ph-ruler text-berry"></i> Baby Measurements
               </span>
-              <button onclick="toggleUnits()" id="unit-toggle-btn" class="text-xs font-display font-bold px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 text-berry shadow-sm hover:bg-pink-50">
-                Showing: Metric + US
+              <button onclick="toggleUnits()" id="unit-toggle-btn" class="btn-tactile min-h-[34px] text-xs font-display font-bold px-3 py-1 rounded-xl bg-white border border-slate-200 text-berry shadow-sm hover:bg-pink-50">
+                Metric + US
               </button>
             </div>
-            <div class="grid grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 gap-2.5">
               <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
-                <div class="text-[11px] font-bold text-slate-400 uppercase">Length (Crown to Heel)</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase">Length</div>
                 <div id="measure-length-primary" class="font-display text-lg sm:text-xl font-bold text-slate-800 mt-0.5">15.3 cm</div>
-                <div id="measure-length-secondary" class="text-xs font-semibold text-berry">~6.0 inches</div>
+                <div id="measure-length-secondary" class="text-[11px] font-semibold text-berry">~6.0 in (crown-heel)</div>
               </div>
               <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
-                <div class="text-[11px] font-bold text-slate-400 uppercase">Estimated Weight</div>
+                <div class="text-[10px] font-bold text-slate-400 uppercase">Weight</div>
                 <div id="measure-weight-primary" class="font-display text-lg sm:text-xl font-bold text-slate-800 mt-0.5">240 g</div>
-                <div id="measure-weight-secondary" class="text-xs font-semibold text-plum">~8.5 oz (0.53 lb)</div>
+                <div id="measure-weight-secondary" class="text-[11px] font-semibold text-plum">~8.5 oz (0.53 lb)</div>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Actual Size Scale Visualizer Card (Proportional Circle + Compare Week) -->
-        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-pink-100 shadow-storybook">
-          <div class="flex items-center justify-between mb-3">
+        <!-- Mobile-Responsive Side-by-Side Relative Scale Visualizer Card -->
+        <div class="bg-white rounded-3xl p-4 sm:p-6 border-2 border-pink-100 shadow-storybook">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 mb-3">
             <div>
               <h3 class="font-display text-lg font-bold text-slate-800 flex items-center gap-1.5">
                 <i class="ph-fill ph-circles-three-plus text-plum"></i>
-                Relative Scale Visualizer
+                Side-by-Side Scale Visualizer
               </h3>
-              <p class="text-xs text-slate-500">See how Week <span id="scale-curr-wk">19</span> compares to another week &amp; full term (51.2 cm)</p>
+              <p class="text-xs text-slate-500">Compare Week <span id="scale-curr-wk" class="font-bold text-berry">19</span> proportionally against any week</p>
             </div>
-            <!-- Compare Week Dropdown -->
-            <div class="flex items-center gap-1.5">
-              <label for="compare-week-select" class="text-xs font-bold text-slate-500">vs.</label>
-              <select id="compare-week-select" onchange="renderAll()" class="font-display font-bold text-xs bg-purple-50 text-plum border border-purple-200 rounded-xl px-2.5 py-1.5 focus:outline-none">
+            <!-- Compare Week Dropdown (Min 44px height for touch) -->
+            <div class="flex items-center gap-2">
+              <label for="compare-week-select" class="text-xs font-bold text-slate-500 shrink-0">Compare vs:</label>
+              <select id="compare-week-select" onchange="renderAll()" class="min-h-[42px] font-display font-bold text-xs bg-purple-50 text-plum border border-purple-200 rounded-xl px-3 py-1.5 focus:outline-none w-full sm:w-auto">
                 <!-- Populated 1..40, default Week 12 -->
               </select>
             </div>
           </div>
 
-          <!-- Proportional Visual Comparison Box -->
-          <div class="ruler-grid relative h-44 rounded-2xl border-2 border-dashed border-pink-200 bg-cream/70 flex items-center justify-center overflow-hidden p-4">
-            <!-- Outer Full-Term Reference Ring (Week 40 = 51.2 cm) -->
-            <div class="w-36 h-36 rounded-full border-2 border-dotted border-slate-300 flex items-center justify-center relative" title="Week 40 Full Term (51.2 cm)">
-              <span class="absolute -top-5 text-[10px] font-bold text-slate-400 bg-white/90 px-1.5 rounded">Wk 40 Max (51.2 cm)</span>
+          <!-- Clean Two-Column Side-by-Side Comparison Box (Fits 360px Mobile Effortlessly) -->
+          <div class="ruler-grid rounded-2xl border-2 border-dashed border-pink-200 bg-cream/70 p-3 sm:p-4">
+            <div class="grid grid-cols-2 gap-2 sm:gap-4 items-center">
               
-              <!-- Comparison Week Circle -->
-              <div id="scale-compare-circle" class="rounded-full bg-purple-200/60 border-2 border-purple-400 absolute transition-all duration-300 flex items-center justify-center">
+              <!-- Left Column: Current Inspected Week -->
+              <div class="flex flex-col items-center justify-between bg-white/85 rounded-2xl p-2.5 sm:p-3 border border-pink-100 shadow-sm h-44">
+                <div class="text-[11px] font-display font-bold text-berry uppercase tracking-wide">
+                  Inspected: Wk <span id="scale-col1-wk">19</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center w-full overflow-hidden">
+                  <div id="scale-current-circle" class="rounded-full bg-gradient-to-br from-pink-400/85 to-amber-300/85 border-2 border-berry shadow-md transition-all duration-300 flex items-center justify-center">
+                    <span id="scale-circle-emoji" class="select-none">🍅</span>
+                  </div>
+                </div>
+                <div id="scale-col1-meta" class="text-[11px] font-bold text-slate-700 text-center">
+                  15.3 cm • 240 g
+                </div>
               </div>
 
-              <!-- Current Inspected Week Circle -->
-              <div id="scale-current-circle" class="rounded-full bg-gradient-to-br from-pink-400/80 to-amber-300/80 border-2 border-berry shadow-md relative z-10 transition-all duration-300 flex items-center justify-center">
-                <span id="scale-circle-emoji" class="text-base select-none">🍅</span>
+              <!-- Right Column: Comparison Week -->
+              <div class="flex flex-col items-center justify-between bg-white/85 rounded-2xl p-2.5 sm:p-3 border border-purple-100 shadow-sm h-44">
+                <div class="text-[11px] font-display font-bold text-plum uppercase tracking-wide">
+                  Compare: Wk <span id="scale-col2-wk">12</span>
+                </div>
+                <div class="flex-1 flex items-center justify-center w-full overflow-hidden">
+                  <div id="scale-compare-circle" class="rounded-full bg-gradient-to-br from-purple-300/80 to-indigo-200/80 border-2 border-plum shadow-sm transition-all duration-300 flex items-center justify-center">
+                    <span id="scale-compare-emoji" class="select-none">🍑</span>
+                  </div>
+                </div>
+                <div id="scale-col2-meta" class="text-[11px] font-bold text-slate-700 text-center">
+                  5.4 cm • 14 g
+                </div>
               </div>
+
             </div>
           </div>
 
           <!-- Comparison Summary Bar -->
-          <div id="scale-comparison-caption" class="mt-3 text-xs text-center font-medium text-slate-600 bg-slate-50 rounded-xl py-2 px-3 border border-slate-200/70">
+          <div id="scale-comparison-caption" class="mt-3 text-xs text-center font-medium text-slate-600 bg-slate-50 rounded-xl py-2.5 px-3 border border-slate-200/70">
             <!-- Populated dynamically -->
           </div>
         </div>
@@ -601,30 +673,30 @@
       </div>
 
       <!-- RIGHT COLUMN (7 cols): Detailed Week Inspector Cards -->
-      <div class="lg:col-span-7 flex flex-col gap-6">
+      <div class="lg:col-span-7 flex flex-col gap-5 sm:gap-6">
         
         <!-- Card 1: Calendar Window & Week Header Spotlight -->
-        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook">
+        <div class="bg-white rounded-3xl p-4 sm:p-6 border-2 border-pink-100 shadow-storybook">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
             <div>
-              <div class="flex items-center gap-2 flex-wrap">
-                <span id="detail-week-badge" class="px-3 py-1 rounded-xl bg-berry text-white font-display font-bold text-sm shadow-sm">
+              <div class="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+                <span id="detail-week-badge" class="px-3 py-1 rounded-xl bg-berry text-white font-display font-bold text-xs sm:text-sm shadow-sm">
                   Week 19, Day 0
                 </span>
-                <span id="detail-Month-pill" class="px-3 py-1 rounded-xl bg-pink-50 text-berry font-display font-semibold text-xs border border-pink-200">
+                <span id="detail-Month-pill" class="px-2.5 py-1 rounded-xl bg-pink-50 text-berry font-display font-semibold text-xs border border-pink-200">
                   Month 5 • 2nd Trimester
                 </span>
-                <span id="detail-special-tag" class="px-3 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300">
+                <span id="detail-special-tag" class="px-2.5 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300">
                   ⭐ Reference Anchor Week
                 </span>
               </div>
-              <h2 id="detail-week-Dates" class="font-display text-xl sm:text-2xl font-bold text-slate-800 mt-2">
+              <h2 id="detail-week-Dates" class="font-display text-lg sm:text-2xl font-bold text-slate-800 mt-2">
                 Tue, Oct 13, 2026 – Mon, Oct 19, 2026
               </h2>
             </div>
 
-            <!-- Celebrate / Confetti Trigger Button -->
-            <button onclick="triggerConfettiBurst()" class="btn-tactile self-start sm:self-center inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-100 to-pink-100 hover:from-amber-200 hover:to-pink-200 text-berry font-display font-bold text-xs border border-pink-200 shadow-sm">
+            <!-- Celebrate / Confetti Trigger Button (Min 44px height) -->
+            <button onclick="triggerConfettiBurst()" class="btn-tactile min-h-[44px] self-start sm:self-center inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-gradient-to-r from-amber-100 to-pink-100 hover:from-amber-200 hover:to-pink-200 text-berry font-display font-bold text-xs sm:text-sm border border-pink-200 shadow-sm shrink-0">
               <span>🎉</span>
               <span>Celebrate Week!</span>
             </button>
@@ -632,9 +704,9 @@
 
           <!-- Progress Bar & Exact Day Breakdown -->
           <div class="mt-4">
-            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5">
-              <span id="detail-days-elapsed">Day 133 of 280 completed</span>
-              <span id="detail-days-remaining" class="text-plum">21 weeks, 0 days (147 days) until Mar 9, 2027</span>
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-1 text-xs font-bold text-slate-600 mb-2">
+              <span id="detail-days-elapsed">Day 133 of 280 completed (47.5%)</span>
+              <span id="detail-days-remaining" class="text-plum">21w 0d (147 days) until Tue, Mar 9, 2027</span>
             </div>
             <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
               <div id="detail-progress-bar" class="h-full rounded-full bg-gradient-to-r from-pink-400 via-amber-400 to-purple-500 transition-all duration-300" style="width: 47.5%"></div>
@@ -643,9 +715,9 @@
         </div>
 
         <!-- Card 2: What Baby Is Up To (Developmental Milestones) -->
-        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook">
+        <div class="bg-white rounded-3xl p-4 sm:p-6 border-2 border-pink-100 shadow-storybook">
           <div class="flex items-center gap-3 mb-4">
-            <div class="w-11 h-11 rounded-2xl bg-pink-50 border border-pink-200 text-berry flex items-center justify-center text-2xl shadow-sm">
+            <div class="w-11 h-11 rounded-2xl bg-pink-50 border border-pink-200 text-berry flex items-center justify-center text-2xl shadow-sm shrink-0">
               👶
             </div>
             <div>
@@ -658,17 +730,17 @@
             </div>
           </div>
 
-          <ul id="detail-milestones-list" class="space-y-3">
+          <ul id="detail-milestones-list" class="space-y-2.5 sm:space-y-3">
             <!-- Populated dynamically with 3 rich developmental bullet cards -->
           </ul>
         </div>
 
-        <!-- Card 3: Care, Check-up & Parent Spotlight + Fun Fact -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Card 3: Care, Check-up & Parent Spotlight + Whimsical Wonder Note -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
           <!-- Care & Check-up Spotlight -->
-          <div class="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 rounded-3xl p-5 border-2 border-emerald-200/80 shadow-sm flex flex-col justify-between">
+          <div class="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 rounded-3xl p-4 sm:p-5 border-2 border-emerald-200/80 shadow-sm flex flex-col justify-between">
             <div>
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-emerald-700 font-display font-bold text-xs border border-emerald-200 mb-3 shadow-sm">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-emerald-700 font-display font-bold text-xs border border-emerald-200 mb-2.5 shadow-sm">
                 <i class="ph-fill ph-stethoscope"></i>
                 <span>Care &amp; Check-up Spotlight</span>
               </div>
@@ -676,19 +748,19 @@
                 Mid-Pregnancy Anatomy Scan Window
               </h4>
               <p id="detail-care-body" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Weeks 18 to 22 are the prime window for the detailed 20-week anatomy ultrasound! You’ll get to see baby’s heart chambers, brain, spine, and tiny fingers waving on screen.
+                Weeks 18 to 22 are the prime window for the detailed 20-week anatomy ultrasound!
               </p>
             </div>
             <div class="mt-4 pt-3 border-t border-emerald-200/60 flex items-center justify-between text-[11px] font-bold text-emerald-800">
               <span>💡 Tip for Week <span class="inspected-wk-num">19</span></span>
-              <span id="detail-care-tag">Schedule 20w Scan</span>
+              <span id="detail-care-tag">Anchor Week (Oct 13)</span>
             </div>
           </div>
 
           <!-- Whimsical Wonder / Body & Bonding Note -->
-          <div class="bg-gradient-to-br from-amber-50/90 to-butter/40 rounded-3xl p-5 border-2 border-amber-200/80 shadow-sm flex flex-col justify-between">
+          <div class="bg-gradient-to-br from-amber-50/90 to-butter/40 rounded-3xl p-4 sm:p-5 border-2 border-amber-200/80 shadow-sm flex flex-col justify-between">
             <div>
-              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-amber-700 font-display font-bold text-xs border border-amber-200 mb-3 shadow-sm">
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-amber-700 font-display font-bold text-xs border border-amber-200 mb-2.5 shadow-sm">
                 <i class="ph-fill ph-shooting-star"></i>
                 <span>Whimsical Wonder Note</span>
               </div>
@@ -696,12 +768,12 @@
                 Fluttering "Quickening" Kicks
               </h4>
               <p id="detail-wonder-body" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
-                Right around Week 19, those gentle popcorn pops or butterfly flutters become unmistakable! Baby can now hear your voice and heartbeat clearly—try humming or reading a bedtime story.
+                Right around Week 19, those gentle popcorn pops or butterfly flutters become unmistakable!
               </p>
             </div>
             <div class="mt-4 pt-3 border-t border-amber-200/60 flex items-center justify-between text-[11px] font-bold text-amber-800">
               <span>✨ Bonding Moment</span>
-              <span id="detail-wonder-tag">Talk &amp; Sing to Baby</span>
+              <span id="detail-wonder-tag">5 Senses Awakening</span>
             </div>
           </div>
         </div>
@@ -709,35 +781,33 @@
       </div>
     </div>
 
-    <!-- BOTTOM INTERACTIVE GROWTH CURVE (ALL 40 WEEKS LENGTH & WEIGHT CHART) -->
-    <section class="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook">
+    <!-- BOTTOM TOUCH-INTERACTIVE 40-WEEK GROWTH CURVE CHART -->
+    <section class="bg-white/95 backdrop-blur-md rounded-3xl p-4 sm:p-7 border-2 border-pink-100 shadow-storybook">
       <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
         <div>
-          <h3 class="font-display text-xl font-bold text-slate-800 flex items-center gap-2">
+          <h3 class="font-display text-lg sm:text-xl font-bold text-slate-800 flex items-center gap-2">
             <i class="ph-fill ph-chart-line-up text-berry"></i>
-            Interactive 40-Week Fetal Growth Curve
+            Touch-Interactive 40-Week Growth Curve
           </h3>
           <p class="text-xs text-slate-500">
-            Click or tap any point along the curve to jump directly to that week and inspect its date &amp; size!
+            Tap or drag your finger across the chart to scrub through all 40 weeks!
           </p>
         </div>
 
-        <!-- Metric switch for chart: Length vs Weight -->
-        <div class="inline-flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start sm:self-auto">
-          <button id="chart-mode-length" onclick="setChartMode('length')" class="px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm">
+        <!-- Metric switch for chart: Length vs Weight (Min 44px touch target) -->
+        <div class="grid grid-cols-2 sm:inline-flex bg-slate-100 p-1 rounded-2xl border border-slate-200">
+          <button id="chart-mode-length" onclick="setChartMode('length')" class="btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm">
             📏 Length Curve (cm)
           </button>
-          <button id="chart-mode-weight" onclick="setChartMode('weight')" class="px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum">
+          <button id="chart-mode-weight" onclick="setChartMode('weight')" class="btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum">
             ⚖️ Weight Curve (g)
           </button>
         </div>
       </div>
 
-      <!-- Responsive SVG Growth Chart Container -->
-      <div class="w-full overflow-x-auto">
-        <div class="min-w-[600px] h-56 relative">
-          <svg id="growth-chart-svg" viewBox="0 0 800 210" class="w-full h-full overflow-visible select-none"></svg>
-        </div>
+      <!-- Fully Responsive Touch-Draggable SVG Growth Chart Container (Fits Mobile Without Horizontal Scroll) -->
+      <div id="growth-chart-wrapper" class="w-full h-52 sm:h-60 relative touch-pan-y select-none cursor-crosshair">
+        <svg id="growth-chart-svg" class="w-full h-full overflow-visible select-none"></svg>
       </div>
     </section>
 
@@ -747,13 +817,20 @@
   <script>
     /*************************************************************************
      * 1. COMPLETE 40-WEEK PREGNANCY DATASET
-     * Every week 1..40 has:
-     * - lengthCm (crown-to-rump early on, crown-to-heel from wk 14+), weightG
-     * - 3 whimsical size comparisons: produce, bakery, curiosity (with emoji + name)
-     * - subtitle, 3 accurate developmental milestones, care spotlight, wonder note
+     * Exact Timing Calibration:
+     * - 19w 0d = Tuesday, Oct 13, 2026
+     * - LMP (0w 0d) = Tuesday, Jun 2, 2026
+     * - Conception (2w 0d) = Tuesday, Jun 16, 2026
+     * - 2nd Trimester (14w 0d) = Tuesday, Sep 8, 2026
+     * - Halfway Mark (20w 0d) = Tuesday, Oct 20, 2026
+     * - Viability (24w 0d) = Tuesday, Nov 17, 2026
+     * - 3rd Trimester (28w 0d) = Tuesday, Dec 15, 2026
+     * - Early Term (37w 0d) = Tuesday, Feb 16, 2027
+     * - Full Term (39w 0d) = Tuesday, Mar 2, 2027
+     * - Expected Due Date (40w 0d) = Tuesday, Mar 9, 2027
      *************************************************************************/
     const WEEKS_DATA = [
-      null, // 1-indexed (Weeks 1 to 40)
+      null,
       {
         week: 1, lengthCm: 0.01, weightG: 0.01,
         produce: { emoji: '🌱', name: 'Tiny Garden Wish' },
@@ -761,7 +838,7 @@
         curiosity: { emoji: '💫', name: 'Stardust Specks' },
         subtitle: 'The very beginning of your 40-week calendar countdown!',
         milestones: [
-          'Pregnancy weeks are counted from the first day of your last menstrual period (LMP), which is June 2, 2026 in this timeline.',
+          'Pregnancy weeks are counted from the first day of your last menstrual period (LMP), which is Tuesday, June 2, 2026.',
           'Your body is preparing a cozy, nutrient-rich uterine lining for the journey ahead.',
           'A new follicle is maturing in preparation for ovulation at the end of next week.'
         ],
@@ -777,13 +854,13 @@
         produce: { emoji: '🌾', name: 'Mustard Pollen Grain' },
         bakery: { emoji: '🧂', name: 'Single Sugar Crystal' },
         curiosity: { emoji: '✨', name: 'Fairy Dewdrop' },
-        subtitle: 'Ovulation & the magical spark of conception!',
+        subtitle: 'Ovulation & the magical spark of conception (Jun 16, 2026)!',
         milestones: [
-          'Around Day 14 (June 16, 2026), ovulation occurs and fertilization sparks a brand-new genetic blueprint.',
-          'All 46 chromosomes combine—already determining eye color, hair texture, and genetic traits!',
+          'On Tuesday, June 16, 2026 (2w 0d), ovulation and fertilization spark a brand-new genetic blueprint!',
+          'All 46 chromosomes combine—already determining eye color, hair texture, and inherited traits.',
           'The fertilized zygote immediately begins dividing as it travels down the fallopian tube.'
         ],
-        careTitle: 'Conception Window (~Jun 16, 2026)',
+        careTitle: 'Conception Window (Jun 16, 2026)',
         careBody: 'Hydration, balanced meals, and restful sleep create the ideal foundation as fertilization takes place.',
         careTag: 'Conception Spark',
         wonderTitle: 'One in a Million',
@@ -901,7 +978,7 @@
       {
         week: 9, lengthCm: 2.3, weightG: 2.0,
         produce: { emoji: '🍒', name: 'Sweet Cherry' },
-        bakery: { emoji: '🥧', name: 'Pecan Tattie Bite' },
+        bakery: { emoji: '🥧', name: 'Pecan Tartlet Bite' },
         curiosity: { emoji: '🫒', name: 'Cocktail Olive' },
         subtitle: 'Heart divides into 4 chambers & tiny earlobes form!',
         milestones: [
@@ -993,9 +1070,9 @@
         produce: { emoji: '🍑', name: 'Fuzzy Peach' },
         bakery: { emoji: '🍩', name: 'Glazed Doughnut Fist' },
         curiosity: { emoji: '🐥', name: 'Fluffy Canary' },
-        subtitle: 'Welcome to the 2nd Trimester! Smiles, grimaces & thumb-sucking!',
+        subtitle: 'Welcome to the 2nd Trimester (Sep 8, 2026)! Smiles & thumb-sucking!',
         milestones: [
-          'Welcome to Trimester 2 (starting Sep 8, 2026)! Note: From Week 14 onward, length is measured crown-to-heel.',
+          'Welcome to Trimester 2 (starting Tuesday, September 8, 2026)! From Week 14 onward, length is measured crown-to-heel.',
           'Facial muscles are active—baby practices squinting, frowning, and smiling!',
           'Fine, downy hair called lanugo begins growing to keep baby cozy and warm.'
         ],
@@ -1175,7 +1252,7 @@
         curiosity: { emoji: '🎤', name: 'Vintage Microphone' },
         subtitle: '🌟 Viability Milestone (Nov 17, 2026) & lung surfactant!',
         milestones: [
-          'Major Milestone (Tue, Nov 17, 2026): Week 24 marks fetal viability, where baby has a strong chance of thriving with specialized care if born early.',
+          'Major Milestone (Tuesday, November 17, 2026): Week 24 marks fetal viability, where baby has a strong chance of thriving with specialized care if born early.',
           'Lungs begin producing surfactant, a vital substance that helps tiny air sacs inflate without sticking.',
           'Inner ear balance organs are mature—baby knows whether they are upside-down or right-side-up!'
         ],
@@ -1247,7 +1324,7 @@
         curiosity: { emoji: '🧸', name: 'Classic Teddy Bear' },
         subtitle: '🧸 Welcome to the 3rd Trimester (Dec 15, 2026) & 1 Kilogram!',
         milestones: [
-          'Hello, Third Trimester (starting Tue, Dec 15, 2026)! Only 12 weeks remain until March 9, 2027!',
+          'Hello, Third Trimester (starting Tuesday, December 15, 2026)! Only 12 weeks remain until March 9, 2027!',
           'Baby tops 1 kilogram (2.2 lbs) and is adding plump baby fat under their skin.',
           'The brain’s surface is developing characteristic grooves and folds (gyri and sulci) as intelligence centers expand.'
         ],
@@ -1409,7 +1486,7 @@
         curiosity: { emoji: '🐣', name: 'Cozy Baby Lamb Plush' },
         subtitle: '🐣 Early Term Milestone (Feb 16, 2027)! Practicing inhaling & grasping!',
         milestones: [
-          'Milestone (Tue, Feb 16, 2027): At 37 weeks, your pregnancy reaches "Early Term"!',
+          'Milestone (Tuesday, February 16, 2027): At 37 weeks, your pregnancy reaches "Early Term"!',
           'Baby practices inhaling, exhaling, blinking, sucking, and turning toward light sources.',
           'Most of the downy lanugo hair has vanished, replaced by smooth, rosy newborn skin.'
         ],
@@ -1445,7 +1522,7 @@
         curiosity: { emoji: '👑', name: 'Royal Crown Cushion' },
         subtitle: '👑 Officially FULL TERM (Mar 2, 2027)! Ready to meet the world!',
         milestones: [
-          'Major Milestone (Tue, Mar 2, 2027): Week 39 is officially "Full Term" according to obstetric guidelines!',
+          'Major Milestone (Tuesday, March 2, 2027): Week 39 is officially "Full Term" according to obstetric guidelines!',
           'Lungs are producing maximum surfactant for baby’s very first deep breath of fresh air.',
           'Baby continues adding cozy fat stores while waiting for the moment to say hello.'
         ],
@@ -1480,12 +1557,12 @@
      * 2. KEY MILESTONE CHIPS FOR THE QUICK-JUMP RIBBON
      *************************************************************************/
     const MILESTONE_CHIPS = [
-      { week: 1, day: 0, icon: '🌱', label: 'Journey Starts', tag: 'Wk 1' },
-      { week: 2, day: 0, icon: '✨', label: 'Conception Spark', tag: 'Wk 2' },
-      { week: 6, day: 0, icon: '💓', label: 'First Heartbeat', tag: 'Wk 6' },
-      { week: 10, day: 0, icon: '🍓', label: 'Official Fetus', tag: 'Wk 10' },
+      { week: 1, day: 0, icon: '🌱', label: 'LMP Week 1', tag: 'Wk 1' },
+      { week: 2, day: 0, icon: '✨', label: 'Conception', tag: 'Wk 2' },
+      { week: 6, day: 0, icon: '💓', label: 'Heartbeat', tag: 'Wk 6' },
+      { week: 10, day: 0, icon: '🍓', label: 'Fetus Stage', tag: 'Wk 10' },
       { week: 14, day: 0, icon: '🌸', label: '2nd Trimester', tag: 'Wk 14' },
-      { week: 19, day: 0, icon: '🥭', label: 'Anchor (Oct 13)', tag: 'Wk 19 ⭐' },
+      { week: 19, day: 0, icon: '🥭', label: 'Oct 13 Anchor', tag: 'Wk 19 ⭐' },
       { week: 20, day: 0, icon: '🎉', label: 'Halfway & Scan', tag: 'Wk 20' },
       { week: 24, day: 0, icon: '🌟', label: 'Viability', tag: 'Wk 24' },
       { week: 28, day: 0, icon: '🧸', label: '3rd Trimester', tag: 'Wk 28' },
@@ -1503,16 +1580,17 @@
       anchorWeeks: 19,
       anchorDays: 0,
       inspectedWeek: 19,
-      inspectedDayOffset: 0, // 0 to 6 days within the inspected week
-      comparisonTheme: 'produce', // 'produce' | 'bakery' | 'curiosity'
-      chartMode: 'length', // 'length' | 'weight'
+      inspectedDayOffset: 0,
+      comparisonTheme: 'produce',
+      chartMode: 'length',
       soundEnabled: true,
       autoPlayTimer: null,
-      unitMode: 'both' // 'both' | 'metric' | 'imperial'
+      unitMode: 'both',
+      mobileTraysExpanded: true
     };
 
     /*************************************************************************
-     * 4. DATE ARITHMETIC HELPERS (Time-Zone Safe Local Noon UTC Parsing)
+     * 4. DATE ARITHMETIC HELPERS (Time-Zone Safe UTC Noon Calculation)
      *************************************************************************/
     function parseDateStr(yyyyMmDd) {
       const [y, m, d] = yyyyMmDd.split('-').map(Number);
@@ -1553,26 +1631,23 @@
       });
     }
 
-    // Compute LMP (Week 0, Day 0) from current anchor state
     function getLmpDate() {
       const refDate = parseDateStr(state.anchorDateStr);
       const totalAnchorDays = (state.anchorWeeks * 7) + state.anchorDays;
       return addDays(refDate, -totalAnchorDays);
     }
 
-    // Compute Date for any (week, dayOffset)
     function getDateForGestation(week, dayOffset = 0) {
       const lmp = getLmpDate();
       return addDays(lmp, (week * 7) + dayOffset);
     }
 
-    // Compute Expected Due Date (40w 0d = LMP + 280 days)
     function getEddDate() {
       return getDateForGestation(40, 0);
     }
 
     /*************************************************************************
-     * 5. GENTLE WEB AUDIO SYNTHESIZER (Zero External Assets, Playful Pops)
+     * 5. GENTLE WEB AUDIO SYNTHESIZER
      *************************************************************************/
     let audioCtx = null;
     function playPopSound(pitchMultiplier = 1) {
@@ -1589,23 +1664,21 @@
         osc.type = 'sine';
         const baseFreq = 320 + (state.inspectedWeek * 9) * pitchMultiplier;
         osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
-        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, audioCtx.currentTime + 0.085);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, audioCtx.currentTime + 0.08);
 
-        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+        gain.gain.setValueAtTime(0.07, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.085);
 
         osc.connect(gain);
         gain.connect(audioCtx.destination);
         osc.start();
-        osc.stop(audioCtx.currentTime + 0.095);
-      } catch (e) {
-        // Ignore audio errors if blocked by browser policy
-      }
+        osc.stop(audioCtx.currentTime + 0.09);
+      } catch (e) {}
     }
 
     function playCelebrationChime() {
       if (!state.soundEnabled) return;
-      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      const notes = [523.25, 659.25, 783.99, 1046.50];
       notes.forEach((freq, idx) => {
         setTimeout(() => {
           try {
@@ -1614,12 +1687,12 @@
             const gain = audioCtx.createGain();
             osc.type = 'triangle';
             osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
-            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+            gain.gain.setValueAtTime(0.09, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.26);
             osc.connect(gain);
             gain.connect(audioCtx.destination);
             osc.start();
-            osc.stop(audioCtx.currentTime + 0.3);
+            osc.stop(audioCtx.currentTime + 0.28);
           } catch (e) {}
         }, idx * 75);
       });
@@ -1628,11 +1701,14 @@
     function toggleSound() {
       state.soundEnabled = !state.soundEnabled;
       const icon = document.getElementById('sound-icon');
+      const mobileLbl = document.getElementById('sound-label-mobile');
       if (state.soundEnabled) {
         icon.className = 'ph-fill ph-speaker-high text-lg text-berry';
+        if (mobileLbl) mobileLbl.textContent = 'Sound On';
         playPopSound(1.2);
       } else {
         icon.className = 'ph-fill ph-speaker-slash text-lg text-slate-400';
+        if (mobileLbl) mobileLbl.textContent = 'Muted';
       }
     }
 
@@ -1640,7 +1716,6 @@
      * 6. CUSTOM SVG BADGE ART GENERATOR FOR THE HERO STAGE
      *************************************************************************/
     function createWhimsicalBadgeSVG(emoji, week) {
-      // Palette shifts gently across trimesters
       let ringColor = '#FF8FA3';
       let bgGrad1 = '#FFF0F3';
       let bgGrad2 = '#FFE5EC';
@@ -1655,7 +1730,7 @@
       }
 
       return `
-        <div class="relative flex items-center justify-center w-36 h-36 animate-pop">
+        <div class="relative flex items-center justify-center w-32 h-32 sm:w-36 sm:h-36 animate-pop">
           <svg class="w-full h-full" viewBox="0 0 140 140">
             <defs>
               <radialGradient id="badgeGrad" cx="50%" cy="40%" r="60%">
@@ -1663,15 +1738,13 @@
                 <stop offset="100%" stop-color="${bgGrad2}" />
               </radialGradient>
             </defs>
-            <!-- Scalloped Storybook Badge Outer -->
             <circle cx="70" cy="70" r="62" fill="url(#badgeGrad)" stroke="${ringColor}" stroke-width="3" stroke-dasharray="6 4" />
-            <!-- Sparkle stars inside badge -->
             <circle cx="28" cy="34" r="3" fill="${ringColor}" opacity="0.6" />
             <circle cx="112" cy="38" r="2.5" fill="${ringColor}" opacity="0.6" />
             <circle cx="32" cy="108" r="2.5" fill="${ringColor}" opacity="0.5" />
             <circle cx="108" cy="104" r="3.5" fill="${ringColor}" opacity="0.5" />
           </svg>
-          <span class="absolute text-6xl sm:text-7xl select-none drop-shadow-sm">${emoji}</span>
+          <span class="absolute text-5xl sm:text-7xl select-none drop-shadow-sm">${emoji}</span>
         </div>
       `;
     }
@@ -1692,18 +1765,25 @@
       const exactSelectedDate = getDateForGestation(wk, dayOff);
       const anchorDateObj = parseDateStr(state.anchorDateStr);
 
-      // Total days completed & remaining
       const totalDaysCompleted = (wk * 7) + dayOff;
       const totalDaysRemaining = Math.max(0, 280 - totalDaysCompleted);
       const remWeeks = Math.floor(totalDaysRemaining / 7);
       const remDays = totalDaysRemaining % 7;
       const pctComplete = Math.min(100, Math.max(0, (totalDaysCompleted / 280) * 100)).toFixed(1);
 
-      // Update Header Summary & Top Metric Cards
+      const themeMap = {
+        produce: { item: data.produce, label: `At Week ${wk}, Baby is the size of a...` },
+        bakery: { item: data.bakery, label: `In the Sweet Bakery, Week ${wk} is a...` },
+        curiosity: { item: data.curiosity, label: `In Whimsical Curiosities, Week ${wk} is a...` }
+      };
+      const activeThemeObj = themeMap[state.comparisonTheme];
+
+      // Header & Top Metric Cards
       document.getElementById('header-anchor-summary').textContent =
         `${state.anchorWeeks}w ${state.anchorDays}d on ${formatShortDate(anchorDateObj)}`;
+      document.getElementById('header-edd-inline').textContent = formatShortDate(eddDate);
       document.getElementById('btn-jump-anchor').innerHTML =
-        `<i class="ph-fill ph-push-pin"></i><span>${formatCompactDate(anchorDateObj)} (${state.anchorWeeks}w ${state.anchorDays}d)</span>`;
+        `<i class="ph-fill ph-push-pin shrink-0"></i><span class="truncate">${formatCompactDate(anchorDateObj)} (${state.anchorWeeks}w ${state.anchorDays}d)</span>`;
 
       document.getElementById('metric-edd').textContent = formatShortDate(eddDate);
       document.getElementById('metric-inspected-age').textContent = `${wk} Weeks, ${dayOff} Days`;
@@ -1713,9 +1793,14 @@
       document.getElementById('metric-countdown').textContent =
         totalDaysRemaining === 0 ? '🎉 Due Date!' : `${remWeeks}w ${remDays}d Left`;
       document.getElementById('metric-progress-pct').textContent =
-        `${totalDaysRemaining} days to go • ${pctComplete}% done`;
+        `${totalDaysRemaining}d left • ${pctComplete}%`;
 
-      // Update Slider & Trimester Pill
+      // Sticky Scrubber Header Live Readout
+      document.getElementById('sticky-live-emoji').textContent = activeThemeObj.item.emoji;
+      document.getElementById('sticky-week-title').textContent = `Week ${wk}, Day ${dayOff}`;
+      document.getElementById('sticky-date-subtitle').textContent =
+        `${formatShortDate(exactSelectedDate)} • ${activeThemeObj.item.name} (${data.lengthCm} cm)`;
+
       const slider = document.getElementById('week-slider');
       if (Number(slider.value) !== wk) slider.value = wk;
 
@@ -1723,44 +1808,48 @@
       let trimesterNum = 1;
       if (wk <= 13) {
         trimesterNum = 1;
-        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-pink-100 text-berry border border-pink-300 shadow-sm';
-        trimPill.textContent = '🌱 1st Trimester (Weeks 1–13)';
+        trimPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-display font-bold bg-pink-100 text-berry border border-pink-300';
+        trimPill.textContent = '🌱 1st Tri';
       } else if (wk <= 27) {
         trimesterNum = 2;
-        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-sm';
-        trimPill.textContent = '✨ 2nd Trimester (Weeks 14–27)';
+        trimPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-display font-bold bg-amber-100 text-amber-800 border border-amber-300';
+        trimPill.textContent = '✨ 2nd Tri';
       } else {
         trimesterNum = 3;
-        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-purple-100 text-plum border border-purple-300 shadow-sm';
-        trimPill.textContent = '🧸 3rd Trimester (Weeks 28–40)';
+        trimPill.className = 'px-2.5 py-0.5 rounded-full text-[11px] font-display font-bold bg-purple-100 text-plum border border-purple-300';
+        trimPill.textContent = '🧸 3rd Tri';
       }
 
-      // Render Day-within-Week Selector (+0d to +6d)
+      // Render 7-Column Touch Day Pills (+0d to +6d, min-h-[44px])
       document.getElementById('day-selector-week-label').textContent = `(Week ${wk})`;
+      document.getElementById('day-selector-active-date').textContent = formatShortDate(exactSelectedDate);
       const dayPillsContainer = document.getElementById('day-pills-container');
       dayPillsContainer.innerHTML = '';
       for (let d = 0; d <= 6; d++) {
         const dDate = getDateForGestation(wk, d);
         const isSelected = d === dayOff;
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.onclick = () => setDayOffset(d);
         btn.className = isSelected
-          ? 'btn-tactile py-2 px-1.5 rounded-xl bg-berry text-white font-display font-bold text-xs shadow-sm border border-berry flex flex-col items-center justify-center'
-          : 'btn-tactile py-2 px-1.5 rounded-xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex flex-col items-center justify-center';
+          ? 'btn-tactile min-h-[44px] py-1.5 px-1 rounded-xl bg-berry text-white font-display font-bold text-xs shadow-sm border border-berry flex flex-col items-center justify-center'
+          : 'btn-tactile min-h-[44px] py-1.5 px-1 rounded-xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex flex-col items-center justify-center';
         btn.innerHTML = `
-          <span>${wk}w +${d}d</span>
-          <span class="text-[10px] ${isSelected ? 'text-pink-100' : 'text-slate-400'} font-sans">${formatCompactDate(dDate)}</span>
+          <span class="leading-none">+${d}d</span>
+          <span class="text-[9px] sm:text-[10px] ${isSelected ? 'text-pink-100' : 'text-slate-400'} font-sans mt-0.5 truncate max-w-full">${formatCompactDate(dDate)}</span>
         `;
         dayPillsContainer.appendChild(btn);
       }
 
-      // Render Quick-Jump Milestone Ribbon
+      // Render Quick-Jump Milestone Ribbon (Horizontal Snap Scroll on Mobile, Wrap on Desktop)
       const ribbon = document.getElementById('milestone-ribbon');
       ribbon.innerHTML = '';
+      let activeChipEl = null;
       MILESTONE_CHIPS.forEach(chip => {
         const chipDate = getDateForGestation(chip.week, chip.day);
         const active = chip.week === wk;
         const btn = document.createElement('button');
+        btn.type = 'button';
         btn.onclick = () => {
           setInspectWeek(chip.week, chip.day);
           if (chip.week === 20 || chip.week === 40 || chip.week === 19) {
@@ -1768,8 +1857,8 @@
           }
         };
         btn.className = active
-          ? 'btn-tactile shrink-0 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-berry to-pink-500 text-white font-display font-bold text-xs shadow-md flex items-center gap-2 border border-pink-400'
-          : 'btn-tactile shrink-0 px-3.5 py-2 rounded-2xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex items-center gap-2';
+          ? 'btn-tactile snap-center shrink-0 min-h-[44px] px-3 py-1.5 rounded-2xl bg-gradient-to-r from-berry to-pink-500 text-white font-display font-bold text-xs shadow-md flex items-center gap-2 border border-pink-400'
+          : 'btn-tactile snap-center shrink-0 min-h-[44px] px-3 py-1.5 rounded-2xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex items-center gap-2';
         btn.innerHTML = `
           <span class="text-base">${chip.icon}</span>
           <div class="text-left leading-tight">
@@ -1777,24 +1866,25 @@
             <div class="text-[10px] ${active ? 'text-pink-100' : 'text-slate-400'} font-sans">${formatCompactDate(chipDate)}, ${chipDate.getUTCFullYear()}</div>
           </div>
         `;
+        if (active) activeChipEl = btn;
         ribbon.appendChild(btn);
       });
 
-      // Render Left Column: Whimsical Size Showcase
-      const themeMap = {
-        produce: { item: data.produce, label: `At Week ${wk}, Baby is the size of a...` },
-        bakery: { item: data.bakery, label: `In the Sweet Bakery, Week ${wk} is a...` },
-        curiosity: { item: data.curiosity, label: `In Whimsical Curiosities, Week ${wk} is a...` }
-      };
-      const activeThemeObj = themeMap[state.comparisonTheme];
+      // Center active chip in horizontal ribbon on mobile without scrolling vertical window
+      if (activeChipEl && window.innerWidth < 1024) {
+        const ribbonRect = ribbon.getBoundingClientRect();
+        const chipRect = activeChipEl.getBoundingClientRect();
+        const offset = (chipRect.left - ribbonRect.left) - (ribbonRect.width / 2) + (chipRect.width / 2);
+        ribbon.scrollBy({ left: offset, behavior: 'smooth' });
+      }
 
-      // Update theme buttons active state
+      // Update Theme Tabs
       ['produce', 'bakery', 'curiosity'].forEach(t => {
         const el = document.getElementById(`theme-btn-${t}`);
         if (t === state.comparisonTheme) {
-          el.className = 'btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200';
+          el.className = 'btn-tactile min-h-[44px] py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200';
         } else {
-          el.className = 'btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry';
+          el.className = 'btn-tactile min-h-[44px] py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry';
         }
       });
 
@@ -1803,7 +1893,7 @@
       document.getElementById('size-category-label').textContent = activeThemeObj.label;
       document.getElementById('size-hero-title').textContent = activeThemeObj.item.name;
       document.getElementById('size-hero-blurb').textContent =
-        `Patch: ${data.produce.name} • Bakery: ${data.bakery.name} • Whimsy: ${data.curiosity.name}`;
+        `Produce: ${data.produce.name} • Bakery: ${data.bakery.name} • Whimsy: ${data.curiosity.name}`;
 
       document.getElementById('trio-produce-emoji').textContent = data.produce.emoji;
       document.getElementById('trio-produce-name').textContent = data.produce.name;
@@ -1812,7 +1902,7 @@
       document.getElementById('trio-curiosity-emoji').textContent = data.curiosity.emoji;
       document.getElementById('trio-curiosity-name').textContent = data.curiosity.name;
 
-      // Length & Weight Formatting
+      // Length & Weight Readout
       const inches = (data.lengthCm / 2.54).toFixed(1);
       const oz = (data.weightG * 0.035274).toFixed(1);
       const lbs = (data.weightG / 453.592).toFixed(2);
@@ -1829,37 +1919,48 @@
         wtSecondary.textContent = data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`;
       } else {
         lenPrimary.textContent = `${data.lengthCm} cm`;
-        lenSecondary.textContent = `~${inches} inches ${wk < 14 ? '(crown-rump)' : '(crown-heel)'}`;
+        lenSecondary.textContent = `~${inches} in ${wk < 14 ? '(crown-rump)' : '(crown-heel)'}`;
         wtPrimary.textContent = data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`;
         wtSecondary.textContent = data.weightG >= 454 ? `~${lbs} lbs (${oz} oz)` : `~${oz} oz`;
       }
 
-      // Render Relative Scale Visualizer
+      // Render Two-Column Side-by-Side Relative Scale Visualizer
       document.getElementById('scale-curr-wk').textContent = wk;
       const compareSelect = document.getElementById('compare-week-select');
       const compareWk = Number(compareSelect.value) || 12;
       const compareData = WEEKS_DATA[compareWk];
 
-      // Max visual diameter = 144px (for 51.2 cm at Week 40)
-      const maxPx = 144;
-      const currPx = Math.max(14, Math.round((data.lengthCm / 51.2) * maxPx));
-      const compPx = Math.max(12, Math.round((compareData.lengthCm / 51.2) * maxPx));
+      // Max visual circle diameter inside the 2-column box = 108px (fits 360px phone screens cleanly)
+      const maxScaleMark = Math.max(data.lengthCm, compareData.lengthCm, 25);
+      const maxCirclePx = 104;
+      const currPx = Math.max(20, Math.round((data.lengthCm / maxScaleMark) * maxCirclePx));
+      const compPx = Math.max(20, Math.round((compareData.lengthCm / maxScaleMark) * maxCirclePx));
+
+      document.getElementById('scale-col1-wk').textContent = wk;
+      document.getElementById('scale-col2-wk').textContent = compareWk;
 
       const currCircle = document.getElementById('scale-current-circle');
       currCircle.style.width = `${currPx}px`;
       currCircle.style.height = `${currPx}px`;
-      document.getElementById('scale-circle-emoji').textContent = activeThemeObj.item.emoji;
-      document.getElementById('scale-circle-emoji').style.fontSize = currPx < 28 ? '11px' : '18px';
+      const currEmojiEl = document.getElementById('scale-circle-emoji');
+      currEmojiEl.textContent = activeThemeObj.item.emoji;
+      currEmojiEl.style.fontSize = `${Math.max(12, Math.round(currPx * 0.44))}px`;
 
       const compCircle = document.getElementById('scale-compare-circle');
       compCircle.style.width = `${compPx}px`;
       compCircle.style.height = `${compPx}px`;
+      const compEmojiEl = document.getElementById('scale-compare-emoji');
+      compEmojiEl.textContent = compareData[state.comparisonTheme].emoji;
+      compEmojiEl.style.fontSize = `${Math.max(12, Math.round(compPx * 0.44))}px`;
+
+      document.getElementById('scale-col1-meta').textContent = `${data.lengthCm} cm • ${data.weightG >= 1000 ? (data.weightG/1000).toFixed(2)+' kg' : data.weightG+' g'}`;
+      document.getElementById('scale-col2-meta').textContent = `${compareData.lengthCm} cm • ${compareData.weightG >= 1000 ? (compareData.weightG/1000).toFixed(2)+' kg' : compareData.weightG+' g'}`;
 
       const lengthRatio = compareData.lengthCm > 0 ? (data.lengthCm / compareData.lengthCm).toFixed(1) : '1.0';
       document.getElementById('scale-comparison-caption').innerHTML =
-        `Week <strong>${wk}</strong> (${data.lengthCm} cm, ${data.weightG}g) vs. Week <strong>${compareWk}</strong> (${compareData.lengthCm} cm, ${compareData.weightG}g) — <strong>${lengthRatio}x</strong> the length!`;
+        `Week <strong>${wk}</strong> (${activeThemeObj.item.name}) is <strong>${lengthRatio}x</strong> the length of Week <strong>${compareWk}</strong> (${compareData[state.comparisonTheme].name})!`;
 
-      // Render Right Column: Calendar & Milestone Details
+      // Right Column Details
       document.querySelectorAll('.inspected-wk-num').forEach(el => el.textContent = wk);
       document.getElementById('detail-week-badge').textContent = `Week ${wk}, Day ${dayOff}`;
       const pregMonth = Math.min(9, Math.ceil(wk / 4.3));
@@ -1867,16 +1968,16 @@
 
       const specialTag = document.getElementById('detail-special-tag');
       if (wk === state.anchorWeeks && dayOff === state.anchorDays) {
-        specialTag.className = 'px-3 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300';
+        specialTag.className = 'px-2.5 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300';
         specialTag.textContent = `⭐ Reference Anchor (${formatCompactDate(anchorDateObj)})`;
       } else if (wk === 20) {
-        specialTag.className = 'px-3 py-1 rounded-xl bg-pink-100 text-berry font-display font-bold text-xs border border-pink-300';
+        specialTag.className = 'px-2.5 py-1 rounded-xl bg-pink-100 text-berry font-display font-bold text-xs border border-pink-300';
         specialTag.textContent = '🎉 Halfway Milestone!';
       } else if (wk === 40) {
-        specialTag.className = 'px-3 py-1 rounded-xl bg-purple-100 text-plum font-display font-bold text-xs border border-purple-300';
+        specialTag.className = 'px-2.5 py-1 rounded-xl bg-purple-100 text-plum font-display font-bold text-xs border border-purple-300';
         specialTag.textContent = '🎂 Expected Due Date Week!';
       } else {
-        specialTag.className = 'px-3 py-1 rounded-xl bg-slate-100 text-slate-600 font-display font-semibold text-xs border border-slate-200';
+        specialTag.className = 'px-2.5 py-1 rounded-xl bg-slate-100 text-slate-600 font-display font-semibold text-xs border border-slate-200';
         specialTag.textContent = `Selected: ${formatShortDate(exactSelectedDate)}`;
       }
 
@@ -1884,7 +1985,7 @@
         `${formatShortDate(weekStartDate)} – ${formatShortDate(weekEndDate)}`;
 
       document.getElementById('detail-days-elapsed').textContent =
-        `Day ${totalDaysCompleted} of 280 (${pctComplete}% complete)`;
+        `Day ${totalDaysCompleted} of 280 completed (${pctComplete}%)`;
       document.getElementById('detail-days-remaining').textContent =
         totalDaysRemaining === 0
           ? `🎂 Expected Due Date (${formatShortDate(eddDate)})!`
@@ -1898,7 +1999,7 @@
       const bulletIcons = ['✨', '🌱', '💫'];
       data.milestones.forEach((mText, i) => {
         const li = document.createElement('li');
-        li.className = 'flex items-start gap-3 p-3.5 rounded-2xl bg-pink-50/40 border border-pink-100/80 text-slate-700 text-xs sm:text-sm leading-relaxed';
+        li.className = 'flex items-start gap-3 p-3 sm:p-3.5 rounded-2xl bg-pink-50/40 border border-pink-100/80 text-slate-700 text-xs sm:text-sm leading-relaxed';
         li.innerHTML = `
           <span class="w-6 h-6 rounded-full bg-white border border-pink-200 flex items-center justify-center text-xs shrink-0 shadow-sm mt-0.5">${bulletIcons[i % bulletIcons.length]}</span>
           <span>${mText}</span>
@@ -1915,27 +2016,38 @@
       document.getElementById('detail-wonder-body').textContent = data.wonderBody;
       document.getElementById('detail-wonder-tag').textContent = data.wonderTag;
 
-      // Render Interactive 40-Week Growth Curve SVG
+      // Render Responsive Touch-Interactive Growth Chart
       renderGrowthChart();
     }
 
     /*************************************************************************
-     * 8. INTERACTIVE 40-WEEK GROWTH CURVE SVG
+     * 8. RESPONSIVE TOUCH-INTERACTIVE 40-WEEK GROWTH CURVE SVG
+     * Dynamically adapts to phone/tablet/desktop width & supports touch-scrubbing!
      *************************************************************************/
+    let chartGeometry = { padL: 40, padR: 16, width: 600, plotW: 544 };
+
     function renderGrowthChart() {
+      const wrapper = document.getElementById('growth-chart-wrapper');
       const svg = document.getElementById('growth-chart-svg');
+      const rect = wrapper.getBoundingClientRect();
+
+      const width = Math.max(300, Math.round(rect.width || 600));
+      const height = Math.max(190, Math.round(rect.height || 220));
+      const isCompact = width < 480;
+
       const mode = state.chartMode;
       const maxVal = mode === 'length' ? 55 : 3600;
       const unit = mode === 'length' ? 'cm' : 'g';
 
-      const padL = 45;
-      const padR = 25;
-      const padT = 22;
-      const padB = 32;
-      const width = 800;
-      const height = 210;
+      const padL = isCompact ? 38 : 48;
+      const padR = isCompact ? 14 : 24;
+      const padT = 26;
+      const padB = 28;
       const plotW = width - padL - padR;
       const plotH = height - padT - padB;
+
+      chartGeometry = { padL, padR, width, plotW };
+      svg.setAttribute('viewBox', `0 0 ${width} ${height}`);
 
       function getX(wk) {
         return padL + ((wk - 1) / 39) * plotW;
@@ -1944,7 +2056,6 @@
         return padT + plotH - (val / maxVal) * plotH;
       }
 
-      // Build smooth path points
       const pts = [];
       for (let w = 1; w <= 40; w++) {
         const val = mode === 'length' ? WEEKS_DATA[w].lengthCm : WEEKS_DATA[w].weightG;
@@ -1972,12 +2083,12 @@
       `;
 
       // Horizontal grid lines
-      [0, 0.25, 0.5, 0.75, 1].forEach(frac => {
+      [0, 0.5, 1].forEach(frac => {
         const y = padT + plotH * (1 - frac);
         const labelVal = Math.round(maxVal * frac);
         html += `
           <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#F1F5F9" stroke-width="1.5" />
-          <text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#94A3B8" font-size="10" font-weight="700">${labelVal}${unit}</text>
+          <text x="${padL - 6}" y="${y + 4}" text-anchor="end" fill="#94A3B8" font-size="${isCompact ? 9 : 10}" font-weight="700">${labelVal}${unit}</text>
         `;
       });
 
@@ -1986,14 +2097,14 @@
         const tx = getX(tw);
         html += `
           <line x1="${tx}" y1="${padT}" x2="${tx}" y2="${padT + plotH}" stroke="#CBD5E1" stroke-dasharray="4 4" stroke-width="1.5" />
-          <text x="${tx + 4}" y="${padT + 10}" fill="#94A3B8" font-size="9" font-weight="700">Wk ${tw}</text>
+          <text x="${tx + 3}" y="${padT + 10}" fill="#94A3B8" font-size="9" font-weight="700">W${tw}</text>
         `;
       });
 
-      // Area & Line Path
+      // Area & Curve Path
       html += `
         <path d="${areaD}" fill="url(#${fillId})" />
-        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" />
       `;
 
       // Vertical highlight on inspected week
@@ -2001,34 +2112,35 @@
         <line x1="${currPt.x}" y1="${padT}" x2="${currPt.x}" y2="${padT + plotH}" stroke="${strokeColor}" stroke-width="2" stroke-dasharray="3 3" />
       `;
 
-      // Interactive Dots for all 40 weeks
+      // Week Labels & Dots
       pts.forEach(p => {
         const isCurrent = p.w === state.inspectedWeek;
         const isAnchor = p.w === state.anchorWeeks;
-        const r = isCurrent ? 7 : isAnchor ? 4.5 : 3;
+        const r = isCurrent ? 7.5 : isAnchor ? 4.5 : (isCompact ? 2 : 3);
         const dotFill = isCurrent ? '#FFFFFF' : strokeColor;
         const dotStroke = isCurrent ? strokeColor : '#FFFFFF';
-        const showWeekLabel = p.w === 1 || p.w % 5 === 0 || p.w === 19;
+        const showWeekLabel = isCompact
+          ? (p.w === 1 || p.w === 10 || p.w === 19 || p.w === 28 || p.w === 40)
+          : (p.w === 1 || p.w % 5 === 0 || p.w === 19);
 
         html += `
-          <g class="cursor-pointer" onclick="setInspectWeek(${p.w})">
-            <rect x="${p.x - 8}" y="${padT}" width="16" height="${plotH}" fill="transparent" />
-            <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" stroke-width="${isCurrent ? 3.5 : 1.5}" />
-            ${showWeekLabel ? `<text x="${p.x}" y="${height - 8}" text-anchor="middle" fill="${isCurrent ? '#E05780' : '#64748B'}" font-size="10" font-weight="${isCurrent ? '800' : '600'}">W${p.w}</text>` : ''}
+          <g>
+            <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" stroke-width="${isCurrent ? 3.5 : 1}" />
+            ${showWeekLabel ? `<text x="${p.x}" y="${height - 7}" text-anchor="middle" fill="${isCurrent ? '#E05780' : '#64748B'}" font-size="${isCompact ? 9 : 10}" font-weight="${isCurrent ? '800' : '600'}">W${p.w}</text>` : ''}
           </g>
         `;
       });
 
       // Floating Tooltip Badge on Inspected Week
-      const tooltipW = 136;
+      const tooltipW = isCompact ? 124 : 138;
       const tooltipX = Math.min(width - padR - tooltipW, Math.max(padL, currPt.x - tooltipW / 2));
-      const tooltipY = Math.max(padT, currPt.y - 42);
+      const tooltipY = Math.max(4, currPt.y - 38);
       const wData = WEEKS_DATA[state.inspectedWeek];
 
       html += `
         <g transform="translate(${tooltipX}, ${tooltipY})" class="pointer-events-none">
-          <rect width="${tooltipW}" height="28" rx="10" fill="#2D232E" opacity="0.92" />
-          <text x="${tooltipW / 2}" y="18" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="700">
+          <rect width="${tooltipW}" height="26" rx="9" fill="#2D232E" opacity="0.92" />
+          <text x="${tooltipW / 2}" y="17" text-anchor="middle" fill="#FFFFFF" font-size="${isCompact ? 10 : 11}" font-weight="700">
             ${wData.produce.emoji} Wk ${state.inspectedWeek}: ${currPt.val} ${unit}
           </text>
         </g>
@@ -2037,8 +2149,20 @@
       svg.innerHTML = html;
     }
 
+    // Helper to convert pointer/touch X coordinate on Growth Chart into Week 1..40
+    function scrubGrowthChartFromClientX(clientX) {
+      const wrapper = document.getElementById('growth-chart-wrapper');
+      const rect = wrapper.getBoundingClientRect();
+      const relX = clientX - rect.left;
+      const frac = Math.min(1, Math.max(0, (relX - chartGeometry.padL) / chartGeometry.plotW));
+      const targetWeek = Math.min(40, Math.max(1, Math.round(1 + frac * 39)));
+      if (targetWeek !== state.inspectedWeek) {
+        setInspectWeek(targetWeek, state.inspectedDayOffset);
+      }
+    }
+
     /*************************************************************************
-     * 9. USER INTERACTION CONTROLLERS
+     * 9. USER INTERACTION CONTROLLERS & MOBILE GESTURES
      *************************************************************************/
     function onWeekSliderInput(val) {
       state.inspectedWeek = Number(val);
@@ -2076,11 +2200,11 @@
       const btnLen = document.getElementById('chart-mode-length');
       const btnWt = document.getElementById('chart-mode-weight');
       if (mode === 'length') {
-        btnLen.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm';
-        btnWt.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum';
+        btnLen.className = 'btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm';
+        btnWt.className = 'btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum';
       } else {
-        btnWt.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-plum shadow-sm';
-        btnLen.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-berry';
+        btnWt.className = 'btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-plum shadow-sm';
+        btnLen.className = 'btn-tactile min-h-[40px] px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-berry';
       }
       playPopSound();
       renderGrowthChart();
@@ -2089,9 +2213,23 @@
     function toggleUnits() {
       state.unitMode = state.unitMode === 'both' ? 'imperial' : 'both';
       document.getElementById('unit-toggle-btn').textContent =
-        state.unitMode === 'imperial' ? 'Showing: US First' : 'Showing: Metric + US';
+        state.unitMode === 'imperial' ? 'US Units First' : 'Metric + US';
       playPopSound();
       renderAll();
+    }
+
+    function toggleMobileScrubberTrays() {
+      state.mobileTraysExpanded = !state.mobileTraysExpanded;
+      const tray = document.getElementById('scrubber-expandable-trays');
+      const icon = document.getElementById('collapse-trays-icon');
+      if (state.mobileTraysExpanded) {
+        tray.classList.remove('hidden');
+        icon.className = 'ph-bold ph-caret-up text-base';
+      } else {
+        tray.classList.add('hidden');
+        icon.className = 'ph-bold ph-caret-down text-base';
+      }
+      playPopSound();
     }
 
     function jumpToAnchorWeek() {
@@ -2112,7 +2250,6 @@
         const dOff = diffDays % 7;
         setInspectWeek(wk, dOff);
       } else {
-        // Fallback to anchor week 19w 0d if outside window
         setInspectWeek(state.anchorWeeks, state.anchorDays);
       }
       playCelebrationChime();
@@ -2151,20 +2288,19 @@
       renderAll();
     }
 
-    // Auto-Play Story Mode
     function toggleAutoPlay() {
       if (state.autoPlayTimer) {
         stopAutoPlay();
       } else {
         if (state.inspectedWeek >= 40) state.inspectedWeek = 1;
-        document.getElementById('autoplay-icon').className = 'ph-fill ph-pause';
-        document.getElementById('autoplay-text').textContent = 'Pause Story';
+        document.getElementById('autoplay-icon').className = 'ph-fill ph-pause text-sm';
+        document.getElementById('autoplay-text').textContent = 'Pause';
         state.autoPlayTimer = setInterval(() => {
           if (state.inspectedWeek < 40) {
             state.inspectedWeek++;
             playPopSound();
             renderAll();
-            if (state.inspectedWeek === 20 || state.inspectedWeek === 40) {
+            if (state.inspectedWeek === 19 || state.inspectedWeek === 20 || state.inspectedWeek === 40) {
               triggerConfettiBurst();
             }
           } else {
@@ -2179,8 +2315,8 @@
         clearInterval(state.autoPlayTimer);
         state.autoPlayTimer = null;
       }
-      document.getElementById('autoplay-icon').className = 'ph-fill ph-play';
-      document.getElementById('autoplay-text').textContent = 'Auto-Play Story';
+      document.getElementById('autoplay-icon').className = 'ph-fill ph-play text-sm';
+      document.getElementById('autoplay-text').textContent = 'Story';
     }
 
     /*************************************************************************
@@ -2197,12 +2333,12 @@
       canvas.height = window.innerHeight;
 
       const colors = ['#E05780', '#FF9EBB', '#F4A261', '#9F7AEA', '#52B788', '#FFD166'];
-      for (let i = 0; i < 65; i++) {
+      for (let i = 0; i < 60; i++) {
         confettiParticles.push({
-          x: window.innerWidth * 0.5 + (Math.random() - 0.5) * 240,
+          x: window.innerWidth * 0.5 + (Math.random() - 0.5) * 200,
           y: window.innerHeight * 0.35,
-          vx: (Math.random() - 0.5) * 13,
-          vy: -Math.random() * 12 - 4,
+          vx: (Math.random() - 0.5) * 12,
+          vy: -Math.random() * 11 - 4,
           size: Math.random() * 8 + 5,
           color: colors[Math.floor(Math.random() * colors.length)],
           rotation: Math.random() * 360,
@@ -2218,9 +2354,9 @@
             const p = confettiParticles[i];
             p.x += p.vx;
             p.y += p.vy;
-            p.vy += 0.35; // gravity
+            p.vy += 0.35;
             p.rotation += p.vRot;
-            p.alpha -= 0.012;
+            p.alpha -= 0.013;
 
             if (p.alpha <= 0 || p.y > canvas.height + 20) {
               confettiParticles.splice(i, 1);
@@ -2248,7 +2384,7 @@
     }
 
     /*************************************************************************
-     * 11. INITIALIZATION & KEYBOARD NAVIGATION
+     * 11. INITIALIZATION, SWIPE GESTURES & TOUCH CHART SCRUBBING
      *************************************************************************/
     window.addEventListener('DOMContentLoaded', () => {
       // Populate Compare Week Dropdown (1 to 40, default Week 12)
@@ -2261,7 +2397,86 @@
         compSelect.appendChild(opt);
       }
 
-      // Keyboard Left / Right arrow support for scrubbing weeks
+      // 1. Touch Swipe Gesture Support on the Main Showcase Card
+      const swipeZone = document.getElementById('size-showcase-card');
+      const glowCircle = document.getElementById('stage-glow-circle');
+      let touchStartX = 0;
+      let touchStartY = 0;
+      let isSwipingCard = false;
+
+      swipeZone.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          touchStartX = e.touches[0].clientX;
+          touchStartY = e.touches[0].clientY;
+          isSwipingCard = true;
+        }
+      }, { passive: true });
+
+      swipeZone.addEventListener('touchmove', (e) => {
+        if (!isSwipingCard || e.touches.length !== 1) return;
+        const dx = e.touches[0].clientX - touchStartX;
+        const dy = e.touches[0].clientY - touchStartY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 15) {
+          const clampShift = Math.max(-22, Math.min(22, dx * 0.25));
+          glowCircle.style.transform = `translateX(${clampShift}px) rotate(${clampShift * 0.2}deg)`;
+        }
+      }, { passive: true });
+
+      swipeZone.addEventListener('touchend', (e) => {
+        if (!isSwipingCard) return;
+        isSwipingCard = false;
+        glowCircle.style.transform = '';
+        const touchEndX = e.changedTouches[0].clientX;
+        const touchEndY = e.changedTouches[0].clientY;
+        const dx = touchEndX - touchStartX;
+        const dy = touchEndY - touchStartY;
+
+        // Trigger week step if horizontal swipe > 42px and dominant over vertical scroll
+        if (Math.abs(dx) > 42 && Math.abs(dx) > Math.abs(dy) * 1.3) {
+          if (dx < 0) {
+            stepWeek(1); // Swipe left -> Next week
+          } else {
+            stepWeek(-1); // Swipe right -> Previous week
+          }
+        }
+      }, { passive: true });
+
+      // 2. Touch & Mouse Scrubbing on the 40-Week Growth Curve Chart
+      const chartWrapper = document.getElementById('growth-chart-wrapper');
+      let isDraggingChart = false;
+
+      chartWrapper.addEventListener('mousedown', (e) => {
+        isDraggingChart = true;
+        stopAutoPlay();
+        scrubGrowthChartFromClientX(e.clientX);
+      });
+      window.addEventListener('mousemove', (e) => {
+        if (!isDraggingChart) return;
+        scrubGrowthChartFromClientX(e.clientX);
+      });
+      window.addEventListener('mouseup', () => {
+        isDraggingChart = false;
+      });
+
+      chartWrapper.addEventListener('touchstart', (e) => {
+        if (e.touches.length === 1) {
+          stopAutoPlay();
+          scrubGrowthChartFromClientX(e.touches[0].clientX);
+        }
+      }, { passive: true });
+
+      chartWrapper.addEventListener('touchmove', (e) => {
+        if (e.touches.length === 1) {
+          scrubGrowthChartFromClientX(e.touches[0].clientX);
+        }
+      }, { passive: true });
+
+      // 3. Re-render chart cleanly on screen orientation/resize
+      window.addEventListener('resize', () => {
+        renderGrowthChart();
+      });
+
+      // 4. Keyboard Left / Right arrow support
       window.addEventListener('keydown', (e) => {
         if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
         if (e.key === 'ArrowLeft') {
