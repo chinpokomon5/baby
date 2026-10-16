@@ -1,0 +1,2281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Little Sprout Journey — Week Milestones & Fetal Size Explorer</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Fredoka for whimsical headers, Plus Jakarta Sans for crisp body -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Phosphor Icons -->
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            display: ['Fredoka', 'sans-serif'],
+            sans: ['Plus Jakarta Sans', 'sans-serif'],
+          },
+          colors: {
+            cream: '#FFFDF9',
+            peach: '#FFE8DC',
+            blush: '#FFD6E0',
+            berry: '#E05780',
+            mint: '#D8F3DC',
+            sage: '#40916C',
+            lavender: '#E9D8FD',
+            plum: '#6B46C1',
+            butter: '#FFF3B0',
+            amberGlow: '#F4A261',
+            skySoft: '#DDF2FD',
+          },
+          boxShadow: {
+            'storybook': '0 10px 30px -5px rgba(224, 87, 128, 0.12), 0 4px 12px -2px rgba(107, 70, 193, 0.08)',
+            'tactile': '0 5px 0px 0px rgba(224, 87, 128, 0.22)',
+            'tactile-sm': '0 3px 0px 0px rgba(107, 70, 193, 0.18)',
+            'card-glow': '0 14px 34px -8px rgba(244, 162, 97, 0.18)',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --bg-cream: #FFF9F5;
+      --trim-1: #FF8FA3;
+      --trim-2: #F4A261;
+      --trim-3: #805AD5;
+    }
+
+    body {
+      background-color: var(--bg-cream);
+      background-image: 
+        radial-gradient(at 12% 15%, rgba(255, 214, 224, 0.55) 0px, transparent 50%),
+        radial-gradient(at 88% 10%, rgba(233, 216, 253, 0.55) 0px, transparent 50%),
+        radial-gradient(at 82% 85%, rgba(216, 243, 220, 0.55) 0px, transparent 50%),
+        radial-gradient(at 15% 88%, rgba(255, 243, 176, 0.5) 0px, transparent 50%);
+      background-attachment: fixed;
+      color: #2D232E;
+      overflow-x: hidden;
+    }
+
+    /* Floating animations for whimsical vibe */
+    @keyframes floatSlow {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-9px) rotate(2deg); }
+    }
+    @keyframes pulseGentle {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    @keyframes popIn {
+      0% { transform: scale(0.82) rotate(-4deg); opacity: 0.4; }
+      65% { transform: scale(1.06) rotate(2deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes shimmer {
+      0% { background-position: -200% 0; }
+      100% { background-position: 200% 0; }
+    }
+
+    .animate-float {
+      animation: floatSlow 4.5s ease-in-out infinite;
+    }
+    .animate-pulse-gentle {
+      animation: pulseGentle 3s ease-in-out infinite;
+    }
+    .animate-pop {
+      animation: popIn 0.42s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+
+    /* Custom Range Scrubber Styling */
+    .week-scrubber {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 18px;
+      border-radius: 999px;
+      background: linear-gradient(
+        90deg,
+        #FF9EBB 0%,
+        #FF9EBB 32.5%,
+        #F7B267 32.5%,
+        #F7B267 67.5%,
+        #9F7AEA 67.5%,
+        #9F7AEA 100%
+      );
+      outline: none;
+      box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.12), 0 2px 0 rgba(255,255,255,0.8);
+      cursor: pointer;
+      transition: filter 0.2s;
+    }
+
+    .week-scrubber:hover {
+      filter: brightness(1.03);
+    }
+
+    .week-scrubber::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 4px solid #E05780;
+      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.6);
+      cursor: grab;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), border-color 0.2s;
+    }
+
+    .week-scrubber::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    .week-scrubber::-webkit-slider-thumb:active {
+      cursor: grabbing;
+      transform: scale(0.95);
+    }
+
+    .week-scrubber::-moz-range-thumb {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      border: 4px solid #E05780;
+      box-shadow: 0 4px 12px rgba(224, 87, 128, 0.35), 0 0 0 4px rgba(255, 255, 255, 0.6);
+      cursor: grab;
+      transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Custom Scrollbar for Milestone Ribbon */
+    .no-scrollbar::-webkit-scrollbar {
+      height: 6px;
+    }
+    .no-scrollbar::-webkit-scrollbar-track {
+      background: rgba(255, 214, 224, 0.25);
+      border-radius: 999px;
+    }
+    .no-scrollbar::-webkit-scrollbar-thumb {
+      background: rgba(224, 87, 128, 0.35);
+      border-radius: 999px;
+    }
+
+    /* Tactile button press effect */
+    .btn-tactile {
+      transition: all 0.15s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .btn-tactile:active {
+      transform: translateY(3px);
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 50;
+    }
+
+    /* Dotted Grid Pattern for Actual Size Visualizer */
+    .ruler-grid {
+      background-size: 20px 20px;
+      background-image: 
+        linear-gradient(to right, rgba(224, 87, 128, 0.08) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(224, 87, 128, 0.08) 1px, transparent 1px);
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans antialiased selection:bg-blush selection:text-berry pb-16">
+
+  <!-- Celebration Confetti Canvas -->
+  <canvas id="confetti-canvas"></canvas>
+
+  <!-- Decorative Floating Storybook Clouds & Stars (Background) -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden z-0 opacity-65">
+    <svg class="absolute top-6 left-[4%] w-28 h-16 text-white animate-float" style="animation-delay: 0s;" viewBox="0 0 120 70" fill="currentColor">
+      <path d="M35,55 L90,55 C103,55 112,46 112,35 C112,25 104,17 94,16 C90,6 79,0 67,0 C51,0 38,11 35,26 C22,27 12,37 12,49 C12,52 13,55 15,55 Z"/>
+    </svg>
+    <svg class="absolute top-16 right-[6%] w-36 h-20 text-white animate-float" style="animation-delay: 1.8s;" viewBox="0 0 120 70" fill="currentColor">
+      <path d="M35,55 L90,55 C103,55 112,46 112,35 C112,25 104,17 94,16 C90,6 79,0 67,0 C51,0 38,11 35,26 C22,27 12,37 12,49 C12,52 13,55 15,55 Z"/>
+    </svg>
+    <div class="absolute top-36 left-[12%] text-amber-300 text-2xl animate-pulse-gentle">✦</div>
+    <div class="absolute top-24 right-[22%] text-pink-300 text-xl animate-pulse-gentle" style="animation-delay: 1s;">★</div>
+    <div class="absolute bottom-20 left-[8%] text-purple-300 text-2xl animate-pulse-gentle" style="animation-delay: 1.5s;">✦</div>
+  </div>
+
+  <!-- Main Content Container -->
+  <div class="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-5 sm:pt-8">
+
+    <!-- Top Header & Summary Banner -->
+    <header class="bg-white/90 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook mb-6">
+      <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        
+        <!-- Brand & Title -->
+        <div class="flex items-start sm:items-center gap-4">
+          <div class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-blush via-peach to-butter flex items-center justify-center text-3xl sm:text-4xl shadow-sm border-2 border-white shrink-0 animate-float">
+            🌱
+          </div>
+          <div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-pink-50 border border-pink-200 text-berry text-xs font-bold tracking-wide uppercase mb-1">
+              <i class="ph-fill ph-sparkle"></i>
+              <span>Interactive Pregnancy Story & Size Explorer</span>
+            </div>
+            <h1 class="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-slate-800 tracking-tight">
+              Inspect Week Milestones &amp; Fetal Size
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-500 mt-0.5">
+              Anchored at <span id="header-anchor-summary" class="font-semibold text-slate-700">19w 0d on Tue, Oct 13, 2026</span> • Scrub any week to explore baby’s whimsical size &amp; milestones!
+            </p>
+          </div>
+        </div>
+
+        <!-- Action Controls: Sound, Customize Timing, Reset to 19w0d -->
+        <div class="flex flex-wrap items-center gap-2 sm:gap-2.5">
+          <button id="btn-jump-anchor" onclick="jumpToAnchorWeek()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-pink-50 hover:bg-pink-100 text-berry font-display font-semibold text-sm border border-pink-200 shadow-sm">
+            <i class="ph-fill ph-push-pin"></i>
+            <span>Oct 13 (19w 0d)</span>
+          </button>
+
+          <button id="btn-jump-today" onclick="jumpToLiveToday()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-amber-50 hover:bg-amber-100 text-amber-800 font-display font-semibold text-sm border border-amber-200 shadow-sm" title="Jump to current calendar date">
+            <i class="ph-fill ph-calendar-star"></i>
+            <span>Live Today</span>
+          </button>
+
+          <button id="btn-toggle-settings" onclick="toggleTimingDrawer()" class="btn-tactile inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-purple-50 hover:bg-purple-100 text-plum font-display font-semibold text-sm border border-purple-200 shadow-sm">
+            <i class="ph-bold ph-sliders-horizontal"></i>
+            <span>Customize Timing</span>
+          </button>
+
+          <button id="btn-sound-toggle" onclick="toggleSound()" class="btn-tactile w-10 h-10 rounded-2xl bg-slate-50 hover:bg-slate-100 text-slate-600 flex items-center justify-center border border-slate-200 shadow-sm" title="Toggle gentle sound effects">
+            <i id="sound-icon" class="ph-fill ph-speaker-high text-lg text-berry"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Collapsible Customize Timing Drawer -->
+      <div id="timing-drawer" class="hidden mt-5 pt-5 border-t-2 border-dashed border-pink-100 animate-pop">
+        <div class="bg-gradient-to-r from-pink-50/70 via-purple-50/50 to-amber-50/70 rounded-2xl p-4 border border-pink-100">
+          <div class="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <h3 class="font-display font-bold text-slate-800 text-base flex items-center gap-2">
+                <i class="ph-fill ph-clock-Afternoon text-berry"></i>
+                Calibrate Anchor Reference Date &amp; Gestational Age
+              </h3>
+              <p class="text-xs text-slate-600 mt-0.5">
+                Default is calibrated so <strong class="text-berry">19 weeks, 0 days</strong> falls on <strong class="text-berry">Tuesday, October 13, 2026</strong> (Expected Due Date: <strong class="text-plum">Tuesday, March 9, 2027</strong>).
+              </p>
+            </div>
+            <button onclick="resetToDefaultCalibration()" class="btn-tactile self-start md:self-auto inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white hover:bg-pink-50 text-berry border border-pink-200 text-xs font-bold shadow-sm">
+              <i class="ph-bold ph-arrow-counter-clockwise"></i>
+              Reset to 19w 0d on Oct 13, 2026
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-4">
+            <div class="bg-white p-3 rounded-xl border border-pink-100">
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Reference Date</label>
+              <input type="date" id="input-ref-date" value="2026-10-13" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-pink-100">
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Weeks on Reference Date</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="input-ref-weeks" min="1" max="40" value="19" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+                <span class="text-xs font-bold text-slate-400">wks</span>
+              </div>
+            </div>
+            <div class="bg-white p-3 rounded-xl border border-pink-100">
+              <label class="block text-xs font-bold text-slate-500 uppercase mb-1">Extra Days (0–6)</label>
+              <div class="flex items-center gap-2">
+                <input type="number" id="input-ref-days" min="0" max="6" value="0" onchange="updateCustomCalibration()" class="w-full font-display font-semibold text-slate-800 bg-slate-50 border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-berry" />
+                <span class="text-xs font-bold text-slate-400">days</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- 4 Key Timing Ribbon Cards (Always Visible) -->
+      <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 mt-5">
+        <!-- Card 1: Expected Due Date -->
+        <div class="bg-gradient-to-br from-pink-50 to-rose-50/60 rounded-2xl p-3.5 border border-pink-200/80 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-white text-berry flex items-center justify-center text-2xl shadow-sm shrink-0">
+            🎂
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-berry/80">Expected Due Date (40w)</div>
+            <div id="metric-edd" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">Tue, Mar 9, 2027</div>
+            <div id="metric-edd-sub" class="text-[11px] text-slate-500">Full 280-day journey</div>
+          </div>
+        </div>
+
+        <!-- Card 2: Anchor / Inspected Date -->
+        <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 rounded-2xl p-3.5 border border-amber-200/80 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-white text-amber-600 flex items-center justify-center text-2xl shadow-sm shrink-0">
+            🗓️
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-amber-700/80">Inspected Gestation</div>
+            <div id="metric-inspected-age" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">19 Weeks, 0 Days</div>
+            <div id="metric-inspected-date" class="text-[11px] text-slate-600 font-medium truncate">Tue, Oct 13, 2026</div>
+          </div>
+        </div>
+
+        <!-- Card 3: Journey Begins (LMP) & Conception -->
+        <div class="bg-gradient-to-br from-emerald-50 to-teal-50/60 rounded-2xl p-3.5 border border-emerald-200/80 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-white text-emerald-600 flex items-center justify-center text-2xl shadow-sm shrink-0">
+            🌱
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-emerald-700/80">LMPStart (Week 0, Day 0)</div>
+            <div id="metric-lmp" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">Tue, Jun 2, 2026</div>
+            <div id="metric-conception" class="text-[11px] text-slate-500 truncate">Conception: ~Jun 16, 2026</div>
+          </div>
+        </div>
+
+        <!-- Card 4: Countdown to Due Date -->
+        <div class="bg-gradient-to-br from-purple-50 to-indigo-50/60 rounded-2xl p-3.5 border border-purple-200/80 flex items-center gap-3">
+          <div class="w-11 h-11 rounded-xl bg-white text-plum flex items-center justify-center text-2xl shadow-sm shrink-0">
+            ⏳
+          </div>
+          <div class="min-w-0">
+            <div class="text-[11px] font-bold uppercase tracking-wider text-plum/80">Countdown from Selected</div>
+            <div id="metric-countdown" class="font-display text-base sm:text-lg font-bold text-slate-800 truncate">21w 0d Left</div>
+            <div id="metric-progress-pct" class="text-[11px] text-slate-600 font-medium truncate">147 days to go • 47.5% done</div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- MASTER WEEK SCRUBBER & QUICK-JUMP MILESTONE CONTROL -->
+    <section class="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook mb-6">
+      
+      <!-- Top Row of Scrubber: Week Title, Trimester Pill, Step & Auto-Play Buttons -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-5">
+        <div class="flex flex-wrap items-center gap-2.5">
+          <span class="font-display text-xl sm:text-2xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="ph-fill ph-compass text-berry"></i>
+            Master Timeline Scrubber
+          </span>
+          <span id="trimester-pill" class="px-3.5 py-1 rounded-full text-xs font-display font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-sm">
+            ✨ 2nd Trimester (Weeks 14–27)
+          </span>
+        </div>
+
+        <!-- Step & Story Controls -->
+        <div class="flex items-center gap-2 self-start sm:self-auto">
+          <button onclick="stepWeek(-1)" class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-pink-50 hover:text-berry text-slate-700 font-display font-bold text-sm border border-slate-200 flex items-center gap-1 shadow-sm" title="Previous Week (Left Arrow)">
+            <i class="ph-bold ph-caret-left"></i>
+            <span>-1 Wk</span>
+          </button>
+
+          <button id="btn-autoplay" onclick="toggleAutoPlay()" class="btn-tactile px-4 py-2 rounded-xl bg-gradient-to-r from-berry to-pink-500 hover:from-pink-600 hover:to-berry text-white font-display font-bold text-sm flex items-center gap-1.5 shadow-md">
+            <i id="autoplay-icon" class="ph-fill ph-play"></i>
+            <span id="autoplay-text">Auto-Play Story</span>
+          </button>
+
+          <button onclick="stepWeek(1)" class="btn-tactile px-3.5 py-2 rounded-xl bg-slate-100 hover:bg-pink-50 hover:text-berry text-slate-700 font-display font-bold text-sm border border-slate-200 flex items-center gap-1 shadow-sm" title="Next Week (Right Arrow)">
+            <span>+1 Wk</span>
+            <i class="ph-bold ph-caret-right"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Trimester Zone Labels Above Slider -->
+      <div class="grid grid-cols-3 text-[11px] sm:text-xs font-display font-bold mb-2 px-1">
+        <div class="text-pink-600 flex items-center gap-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-pink-400 inline-block"></span>
+          1st Trimester (Wks 1–13)
+        </div>
+        <div class="text-amber-600 text-center flex items-center justify-center gap-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-amber-400 inline-block"></span>
+          2nd Trimester (Wks 14–27)
+        </div>
+        <div class="text-purple-600 text-right flex items-center justify-end gap-1">
+          <span class="w-2.5 h-2.5 rounded-full bg-purple-400 inline-block"></span>
+          3rd Trimester (Wks 28–40)
+        </div>
+      </div>
+
+      <!-- The Main Tactile Range Slider (Weeks 1 to 40) -->
+      <div class="relative py-2">
+        <input
+          id="week-slider"
+          type="range"
+          min="1"
+          max="40"
+          value="19"
+          class="week-scrubber"
+          oninput="onWeekSliderInput(this.value)"
+          aria-label="Inspect pregnancy week from 1 to 40"
+        />
+        <!-- Week Ticks Under Slider -->
+        <div class="flex justify-between text-[10px] sm:text-xs font-bold text-slate-400 mt-2 px-1 select-none">
+          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(1)">Wk 1</span>
+          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(6)">Wk 6 💓</span>
+          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(14)">Wk 14 🌸</span>
+          <span class="cursor-pointer text-berry font-extrabold" onclick="setInspectWeek(19)">Wk 19 🥭</span>
+          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(20)">Wk 20 🎉</span>
+          <span class="cursor-pointer hover:text-berry" onclick="setInspectWeek(28)">Wk 28 🧸</span>
+          <span class="cursor-pointer hover:text-berry hidden sm:inline" onclick="setInspectWeek(37)">Wk 37 🐣</span>
+          <span class="cursor-pointer hover:text-plum text-plum" onclick="setInspectWeek(40)">Wk 40 🎂</span>
+        </div>
+      </div>
+
+      <!-- Day-Within-Week Selector (+0d to +6d) -->
+      <div class="mt-5 pt-4 border-t border-slate-100 flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-xs font-bold uppercase tracking-wider text-slate-400">
+            Fine-Tune Day of Week <span id="day-selector-week-label" class="text-berry">(Week 19)</span>:
+          </span>
+        </div>
+        <div id="day-pills-container" class="grid grid-cols-7 gap-1.5 sm:gap-2 w-full md:w-auto">
+          <!-- Dynamically populated +0d to +6d pills with exact dates -->
+        </div>
+      </div>
+
+      <!-- Quick-Jump Milestone Ribbon -->
+      <div class="mt-5 pt-4 border-t border-slate-100">
+        <div class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-2.5 flex items-center justify-between">
+          <span>✨ Quick-Jump Key Pregnancy Milestones</span>
+          <span class="text-[11px] font-normal text-slate-400 hidden sm:inline">Click any chip to inspect</span>
+        </div>
+        <div id="milestone-ribbon" class="flex items-center gap-2 overflow-x-auto no-scrollbar pb-2">
+          <!-- Populated dynamically with exact calculated dates -->
+        </div>
+      </div>
+    </section>
+
+    <!-- MAIN INSPECTOR STAGE: LEFT = WHIMSICAL SIZE SHOWCASE, RIGHT = MILESTONE & CALENDAR DETAILS -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 mb-8">
+      
+      <!-- LEFT COLUMN (5 cols): Interactive Whimsical Size Showcase & Actual Scale Visualizer -->
+      <div class="lg:col-span-5 flex flex-col gap-6">
+        
+        <!-- Whimsical Size Comparison Stage Card -->
+        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook relative overflow-hidden flex flex-col justify-between">
+          
+          <!-- Category Theme Switcher (Fruits & Veggies / Sweet Bakery / Curiosities) -->
+          <div class="relative z-10">
+            <div class="text-xs font-bold uppercase tracking-wider text-slate-400 text-center mb-2">
+              Choose Comparison Theme
+            </div>
+            <div class="grid grid-cols-3 gap-1.5 bg-pink-50/70 p-1.5 rounded-2xl border border-pink-100">
+              <button id="theme-btn-produce" onclick="setComparisonTheme('produce')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200">
+                <span>🥭</span>
+                <span>Produce</span>
+              </button>
+              <button id="theme-btn-bakery" onclick="setComparisonTheme('bakery')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
+                <span>🥐</span>
+                <span>Bakery</span>
+              </button>
+              <button id="theme-btn-curiosity" onclick="setComparisonTheme('curiosity')" class="btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry">
+                <span>🧸</span>
+                <span>Whimsy</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Centerpiece Animated Illustration Stage -->
+          <div class="my-6 flex flex-col items-center justify-center text-center relative">
+            <!-- Soft glowing backdrop circle -->
+            <div id="stage-glow-circle" class="w-44 h-44 sm:w-48 sm:h-48 rounded-full bg-gradient-to-tr from-pink-100 via-amber-50 to-purple-100 flex items-center justify-center shadow-inner border-4 border-white relative">
+              <!-- Dynamic SVG / Emoji Art Badge -->
+              <div id="size-hero-visual" class="select-none transition-transform duration-300">
+                <!-- Populated by JS -->
+              </div>
+              <!-- Floating Week Badge -->
+              <div id="stage-week-badge" class="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-berry text-white font-display font-bold text-xs shadow-md border-2 border-white">
+                Week 19
+              </div>
+            </div>
+
+            <!-- Size Title & Subtitle -->
+            <div class="mt-4">
+              <div class="text-xs font-bold uppercase tracking-widest text-berry/80" id="size-category-label">
+                At Week 19, Baby is the size of an...
+              </div>
+              <h2 id="size-hero-title" class="font-display text-2xl sm:text-3xl font-bold text-slate-800 mt-0.5">
+                Heirloom Tomato
+              </h2>
+              <p id="size-hero-blurb" class="text-xs sm:text-sm text-slate-500 mt-1 max-w-xs mx-auto">
+                Also comparable to a juicy mango, a berry tart, or a cozy hedgehog!
+              </p>
+            </div>
+          </div>
+
+          <!-- Mini Trio Strip: See all 3 comparisons at a glance -->
+          <div class="grid grid-cols-3 gap-2 pt-4 border-t border-pink-100 text-center">
+            <div onclick="setComparisonTheme('produce')" class="cursor-pointer p-2.5 rounded-2xl bg-rose-50/60 hover:bg-rose-100/70 border border-rose-100 transition">
+              <div id="trio-produce-emoji" class="text-xl mb-0.5">🍅</div>
+              <div class="text-[10px] font-bold uppercase text-rose-500">Patch</div>
+              <div id="trio-produce-name" class="font-display font-bold text-xs text-slate-800 truncate">Heirloom Tomato</div>
+            </div>
+            <div onclick="setComparisonTheme('bakery')" class="cursor-pointer p-2.5 rounded-2xl bg-amber-50/60 hover:bg-amber-100/70 border border-amber-100 transition">
+              <div id="trio-bakery-emoji" class="text-xl mb-0.5">🥧</div>
+              <div class="text-[10px] font-bold uppercase text-amber-600">Bakery</div>
+              <div id="trio-bakery-name" class="font-display font-bold text-xs text-slate-800 truncate">Fresh Berry Tart</div>
+            </div>
+            <div onclick="setComparisonTheme('curiosity')" class="cursor-pointer p-2.5 rounded-2xl bg-purple-50/60 hover:bg-purple-100/70 border border-purple-100 transition">
+              <div id="trio-curiosity-emoji" class="text-xl mb-0.5">🦔</div>
+              <div class="text-[10px] font-bold uppercase text-purple-600">Whimsy</div>
+              <div id="trio-curiosity-name" class="font-display font-bold text-xs text-slate-800 truncate">Baby Hedgehog</div>
+            </div>
+          </div>
+
+          <!-- Length & Weight Pill Readout with Metric/Imperial Toggle -->
+          <div class="mt-4 bg-slate-50 rounded-2xl p-3.5 border border-slate-200/80">
+            <div class="flex items-center justify-between mb-2">
+              <span class="text-xs font-bold uppercase tracking-wider text-slate-500 flex items-center gap-1">
+                <i class="ph-fill ph-ruler text-berry"></i> Estimated Measurements
+              </span>
+              <button onclick="toggleUnits()" id="unit-toggle-btn" class="text-xs font-display font-bold px-2.5 py-0.5 rounded-lg bg-white border border-slate-200 text-berry shadow-sm hover:bg-pink-50">
+                Showing: Metric + US
+              </button>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+              <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Length (Crown to Heel)</div>
+                <div id="measure-length-primary" class="font-display text-lg sm:text-xl font-bold text-slate-800 mt-0.5">15.3 cm</div>
+                <div id="measure-length-secondary" class="text-xs font-semibold text-berry">~6.0 inches</div>
+              </div>
+              <div class="bg-white rounded-xl p-3 border border-slate-100 shadow-sm">
+                <div class="text-[11px] font-bold text-slate-400 uppercase">Estimated Weight</div>
+                <div id="measure-weight-primary" class="font-display text-lg sm:text-xl font-bold text-slate-800 mt-0.5">240 g</div>
+                <div id="measure-weight-secondary" class="text-xs font-semibold text-plum">~8.5 oz (0.53 lb)</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Actual Size Scale Visualizer Card (Proportional Circle + Compare Week) -->
+        <div class="bg-white rounded-3xl p-5 sm:p-6 border-2 border-pink-100 shadow-storybook">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h3 class="font-display text-lg font-bold text-slate-800 flex items-center gap-1.5">
+                <i class="ph-fill ph-circles-three-plus text-plum"></i>
+                Relative Scale Visualizer
+              </h3>
+              <p class="text-xs text-slate-500">See how Week <span id="scale-curr-wk">19</span> compares to another week &amp; full term (51.2 cm)</p>
+            </div>
+            <!-- Compare Week Dropdown -->
+            <div class="flex items-center gap-1.5">
+              <label for="compare-week-select" class="text-xs font-bold text-slate-500">vs.</label>
+              <select id="compare-week-select" onchange="renderAll()" class="font-display font-bold text-xs bg-purple-50 text-plum border border-purple-200 rounded-xl px-2.5 py-1.5 focus:outline-none">
+                <!-- Populated 1..40, default Week 12 -->
+              </select>
+            </div>
+          </div>
+
+          <!-- Proportional Visual Comparison Box -->
+          <div class="ruler-grid relative h-44 rounded-2xl border-2 border-dashed border-pink-200 bg-cream/70 flex items-center justify-center overflow-hidden p-4">
+            <!-- Outer Full-Term Reference Ring (Week 40 = 51.2 cm) -->
+            <div class="w-36 h-36 rounded-full border-2 border-dotted border-slate-300 flex items-center justify-center relative" title="Week 40 Full Term (51.2 cm)">
+              <span class="absolute -top-5 text-[10px] font-bold text-slate-400 bg-white/90 px-1.5 rounded">Wk 40 Max (51.2 cm)</span>
+              
+              <!-- Comparison Week Circle -->
+              <div id="scale-compare-circle" class="rounded-full bg-purple-200/60 border-2 border-purple-400 absolute transition-all duration-300 flex items-center justify-center">
+              </div>
+
+              <!-- Current Inspected Week Circle -->
+              <div id="scale-current-circle" class="rounded-full bg-gradient-to-br from-pink-400/80 to-amber-300/80 border-2 border-berry shadow-md relative z-10 transition-all duration-300 flex items-center justify-center">
+                <span id="scale-circle-emoji" class="text-base select-none">🍅</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Comparison Summary Bar -->
+          <div id="scale-comparison-caption" class="mt-3 text-xs text-center font-medium text-slate-600 bg-slate-50 rounded-xl py-2 px-3 border border-slate-200/70">
+            <!-- Populated dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- RIGHT COLUMN (7 cols): Detailed Week Inspector Cards -->
+      <div class="lg:col-span-7 flex flex-col gap-6">
+        
+        <!-- Card 1: Calendar Window & Week Header Spotlight -->
+        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-4 border-b border-slate-100">
+            <div>
+              <div class="flex items-center gap-2 flex-wrap">
+                <span id="detail-week-badge" class="px-3 py-1 rounded-xl bg-berry text-white font-display font-bold text-sm shadow-sm">
+                  Week 19, Day 0
+                </span>
+                <span id="detail-Month-pill" class="px-3 py-1 rounded-xl bg-pink-50 text-berry font-display font-semibold text-xs border border-pink-200">
+                  Month 5 • 2nd Trimester
+                </span>
+                <span id="detail-special-tag" class="px-3 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300">
+                  ⭐ Reference Anchor Week
+                </span>
+              </div>
+              <h2 id="detail-week-Dates" class="font-display text-xl sm:text-2xl font-bold text-slate-800 mt-2">
+                Tue, Oct 13, 2026 – Mon, Oct 19, 2026
+              </h2>
+            </div>
+
+            <!-- Celebrate / Confetti Trigger Button -->
+            <button onclick="triggerConfettiBurst()" class="btn-tactile self-start sm:self-center inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-amber-100 to-pink-100 hover:from-amber-200 hover:to-pink-200 text-berry font-display font-bold text-xs border border-pink-200 shadow-sm">
+              <span>🎉</span>
+              <span>Celebrate Week!</span>
+            </button>
+          </div>
+
+          <!-- Progress Bar & Exact Day Breakdown -->
+          <div class="mt-4">
+            <div class="flex items-center justify-between text-xs font-bold text-slate-600 mb-1.5">
+              <span id="detail-days-elapsed">Day 133 of 280 completed</span>
+              <span id="detail-days-remaining" class="text-plum">21 weeks, 0 days (147 days) until Mar 9, 2027</span>
+            </div>
+            <div class="w-full h-3.5 bg-slate-100 rounded-full overflow-hidden p-0.5 border border-slate-200">
+              <div id="detail-progress-bar" class="h-full rounded-full bg-gradient-to-r from-pink-400 via-amber-400 to-purple-500 transition-all duration-300" style="width: 47.5%"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card 2: What Baby Is Up To (Developmental Milestones) -->
+        <div class="bg-white rounded-3xl p-6 border-2 border-pink-100 shadow-storybook">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-11 h-11 rounded-2xl bg-pink-50 border border-pink-200 text-berry flex items-center justify-center text-2xl shadow-sm">
+              👶
+            </div>
+            <div>
+              <h3 class="font-display text-lg sm:text-xl font-bold text-slate-800">
+                What Baby is Up To in Week <span class="inspected-wk-num">19</span>
+              </h3>
+              <p id="detail-dev-subtitle" class="text-xs text-slate-500">
+                Sensory superpowers, protective coating &amp; playful kicks!
+              </p>
+            </div>
+          </div>
+
+          <ul id="detail-milestones-list" class="space-y-3">
+            <!-- Populated dynamically with 3 rich developmental bullet cards -->
+          </ul>
+        </div>
+
+        <!-- Card 3: Care, Check-up & Parent Spotlight + Fun Fact -->
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <!-- Care & Check-up Spotlight -->
+          <div class="bg-gradient-to-br from-emerald-50/90 to-teal-50/60 rounded-3xl p-5 border-2 border-emerald-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-emerald-700 font-display font-bold text-xs border border-emerald-200 mb-3 shadow-sm">
+                <i class="ph-fill ph-stethoscope"></i>
+                <span>Care &amp; Check-up Spotlight</span>
+              </div>
+              <h4 id="detail-care-title" class="font-display text-base sm:text-lg font-bold text-slate-800 mb-1.5">
+                Mid-Pregnancy Anatomy Scan Window
+              </h4>
+              <p id="detail-care-body" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Weeks 18 to 22 are the prime window for the detailed 20-week anatomy ultrasound! You’ll get to see baby’s heart chambers, brain, spine, and tiny fingers waving on screen.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-emerald-200/60 flex items-center justify-between text-[11px] font-bold text-emerald-800">
+              <span>💡 Tip for Week <span class="inspected-wk-num">19</span></span>
+              <span id="detail-care-tag">Schedule 20w Scan</span>
+            </div>
+          </div>
+
+          <!-- Whimsical Wonder / Body & Bonding Note -->
+          <div class="bg-gradient-to-br from-amber-50/90 to-butter/40 rounded-3xl p-5 border-2 border-amber-200/80 shadow-sm flex flex-col justify-between">
+            <div>
+              <div class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-white text-amber-700 font-display font-bold text-xs border border-amber-200 mb-3 shadow-sm">
+                <i class="ph-fill ph-shooting-star"></i>
+                <span>Whimsical Wonder Note</span>
+              </div>
+              <h4 id="detail-wonder-title" class="font-display text-base sm:text-lg font-bold text-slate-800 mb-1.5">
+                Fluttering "Quickening" Kicks
+              </h4>
+              <p id="detail-wonder-body" class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                Right around Week 19, those gentle popcorn pops or butterfly flutters become unmistakable! Baby can now hear your voice and heartbeat clearly—try humming or reading a bedtime story.
+              </p>
+            </div>
+            <div class="mt-4 pt-3 border-t border-amber-200/60 flex items-center justify-between text-[11px] font-bold text-amber-800">
+              <span>✨ Bonding Moment</span>
+              <span id="detail-wonder-tag">Talk &amp; Sing to Baby</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- BOTTOM INTERACTIVE GROWTH CURVE (ALL 40 WEEKS LENGTH & WEIGHT CHART) -->
+    <section class="bg-white/95 backdrop-blur-md rounded-3xl p-5 sm:p-7 border-2 border-pink-100 shadow-storybook">
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+        <div>
+          <h3 class="font-display text-xl font-bold text-slate-800 flex items-center gap-2">
+            <i class="ph-fill ph-chart-line-up text-berry"></i>
+            Interactive 40-Week Fetal Growth Curve
+          </h3>
+          <p class="text-xs text-slate-500">
+            Click or tap any point along the curve to jump directly to that week and inspect its date &amp; size!
+          </p>
+        </div>
+
+        <!-- Metric switch for chart: Length vs Weight -->
+        <div class="inline-flex bg-slate-100 p-1 rounded-2xl border border-slate-200 self-start sm:self-auto">
+          <button id="chart-mode-length" onclick="setChartMode('length')" class="px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm">
+            📏 Length Curve (cm)
+          </button>
+          <button id="chart-mode-weight" onclick="setChartMode('weight')" class="px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum">
+            ⚖️ Weight Curve (g)
+          </button>
+        </div>
+      </div>
+
+      <!-- Responsive SVG Growth Chart Container -->
+      <div class="w-full overflow-x-auto">
+        <div class="min-w-[600px] h-56 relative">
+          <svg id="growth-chart-svg" viewBox="0 0 800 210" class="w-full h-full overflow-visible select-none"></svg>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- APPLICATION DATA & INTERACTIVE LOGIC -->
+  <script>
+    /*************************************************************************
+     * 1. COMPLETE 40-WEEK PREGNANCY DATASET
+     * Every week 1..40 has:
+     * - lengthCm (crown-to-rump early on, crown-to-heel from wk 14+), weightG
+     * - 3 whimsical size comparisons: produce, bakery, curiosity (with emoji + name)
+     * - subtitle, 3 accurate developmental milestones, care spotlight, wonder note
+     *************************************************************************/
+    const WEEKS_DATA = [
+      null, // 1-indexed (Weeks 1 to 40)
+      {
+        week: 1, lengthCm: 0.01, weightG: 0.01,
+        produce: { emoji: '🌱', name: 'Tiny Garden Wish' },
+        bakery: { emoji: '✨', name: 'Pinch of Vanilla Sugar' },
+        curiosity: { emoji: '💫', name: 'Stardust Specks' },
+        subtitle: 'The very beginning of your 40-week calendar countdown!',
+        milestones: [
+          'Pregnancy weeks are counted from the first day of your last menstrual period (LMP), which is June 2, 2026 in this timeline.',
+          'Your body is preparing a cozy, nutrient-rich uterine lining for the journey ahead.',
+          'A new follicle is maturing in preparation for ovulation at the end of next week.'
+        ],
+        careTitle: 'Folic Acid & Prenatal Vitamins',
+        careBody: 'Taking a daily prenatal vitamin with at least 400 mcg of folic acid supports healthy neural tube development from day one.',
+        careTag: 'Start Prenatal Vitamin',
+        wonderTitle: 'Chapter One Begins',
+        wonderBody: 'Even before conception occurs, obstetricians count Week 1 as part of the official 280-day countdown to March 9, 2027.',
+        wonderTag: '40-Week Clock Running'
+      },
+      {
+        week: 2, lengthCm: 0.01, weightG: 0.01,
+        produce: { emoji: '🌾', name: 'Mustard Pollen Grain' },
+        bakery: { emoji: '🧂', name: 'Single Sugar Crystal' },
+        curiosity: { emoji: '✨', name: 'Fairy Dewdrop' },
+        subtitle: 'Ovulation & the magical spark of conception!',
+        milestones: [
+          'Around Day 14 (June 16, 2026), ovulation occurs and fertilization sparks a brand-new genetic blueprint.',
+          'All 46 chromosomes combine—already determining eye color, hair texture, and genetic traits!',
+          'The fertilized zygote immediately begins dividing as it travels down the fallopian tube.'
+        ],
+        careTitle: 'Conception Window (~Jun 16, 2026)',
+        careBody: 'Hydration, balanced meals, and restful sleep create the ideal foundation as fertilization takes place.',
+        careTag: 'Conception Spark',
+        wonderTitle: 'One in a Million',
+        wonderBody: 'The newly formed single cell holds the complete instruction manual for every eyelash, fingerprint, and giggle to come.',
+        wonderTag: 'Genetic Blueprint Set'
+      },
+      {
+        week: 3, lengthCm: 0.05, weightG: 0.02,
+        produce: { emoji: '🌿', name: 'Vanilla Bean Seed' },
+        bakery: { emoji: '🧁', name: 'Rainbow Nonpareil Bead' },
+        curiosity: { emoji: '🫧', name: 'Tiny Soap Bubble' },
+        subtitle: 'Cell division & cozy implantation in the uterus!',
+        milestones: [
+          'The microscopic ball of hundreds of cells (now called a blastocyst) completes its journey to the uterus.',
+          'Implantation begins as the blastocyst snuggles into the plush uterine lining.',
+          'The outer cells start forming the placenta while the inner cells become the embryo.'
+        ],
+        careTitle: 'Early hCG Hormone Production',
+        careBody: 'Once implanted, your body starts producing hCG—the pregnancy hormone detected by home tests next week.',
+        careTag: 'Implantation Week',
+        wonderTitle: 'Snuggled Tight',
+        wonderBody: 'Though smaller than a grain of salt, your baby is already communicating chemically with your body.',
+        wonderTag: 'hCG Rising'
+      },
+      {
+        week: 4, lengthCm: 0.1, weightG: 0.05,
+        produce: { emoji: '🌺', name: 'Poppy Seed' },
+        bakery: { emoji: '🥯', name: 'Everything Bagel Seed' },
+        curiosity: { emoji: '🐞', name: 'Ladybug Spot' },
+        subtitle: 'Positive pregnancy test window & neural tube formation!',
+        milestones: [
+          'The embryo splits into three distinct layers that will become the nervous system, heart, lungs, and digestive tract.',
+          'The amniotic sac and yolk sac form to cushion and nourish the growing embryo.',
+          'At 1 millimeter long, baby is officially visible to the naked eye—the size of a poppy seed!'
+        ],
+        careTitle: 'First Positive Test Window!',
+        careBody: 'By the end of Week 4 (around June 30, 2026), home pregnancy tests can reliably detect hCG levels.',
+        careTag: 'Positive Test!',
+        wonderTitle: 'Tiny Poppy Seed',
+        wonderBody: 'Inside a space no bigger than a period at the end of a sentence, the foundation for every organ system is underway.',
+        wonderTag: '3 Germ Layers'
+      },
+      {
+        week: 5, lengthCm: 0.2, weightG: 0.1,
+        produce: { emoji: '🌱', name: 'Sesame Seed' },
+        bakery: { emoji: '🧡', name: 'Cake Sprinkle' },
+        curiosity: { emoji: '✏️', name: 'Sharp Pencil Tip' },
+        subtitle: 'The tiny heart tube forms & prepares for its first beat!',
+        milestones: [
+          'The neural tube—which becomes the brain and spinal cord—runs along the embryo’s back.',
+          'A primitive S-shaped heart tube forms in the center of the embryo and begins pulsing.',
+          'Tiny buds appear that will soon grow into arms and legs.'
+        ],
+        careTitle: 'Calling Your Prenatal Provider',
+        careBody: 'Many parents schedule their first prenatal intake appointment now (usually held between Weeks 8 and 10).',
+        careTag: 'Book 1st Visit',
+        wonderTitle: 'First Pulse of Life',
+        wonderBody: 'Baby’s circulatory system is the very first organ system to begin functioning!',
+        wonderTag: 'Heart Tube Forms'
+      },
+      {
+        week: 6, lengthCm: 0.6, weightG: 0.2,
+        produce: { emoji: '🫘', name: 'Sweet Pea / Lentil' },
+        bakery: { emoji: '🍫', name: 'Mini Chocolate Chip' },
+        curiosity: { emoji: '💎', name: 'Shirt Collar Button' },
+        subtitle: 'First detectable heartbeat flutter & facial features!',
+        milestones: [
+          'Baby’s tiny heart is beating around 110 to 130 times per minute—about twice as fast as yours!',
+          'Little dimples on the sides of the head mark where ears will grow, and dark spots show future eyes.',
+          'The kidneys, liver, and lungs have started their early structural development.'
+        ],
+        careTitle: 'Managing Early Fatigue & Nausea',
+        careBody: 'Small, frequent snacks like ginger tea or crackers by the bedside can help soothe morning sickness.',
+        careTag: 'Heartbeat Week 💓',
+        wonderTitle: '110 Beats Per Minute',
+        wonderBody: 'On an early transvaginal ultrasound, that tiny rhythmic flicker is one of the most magical sights in the world.',
+        wonderTag: 'Rhythmic Flutter'
+      },
+      {
+        week: 7, lengthCm: 1.3, weightG: 0.5,
+        produce: { emoji: '🫐', name: 'Wild Blueberry' },
+        bakery: { emoji: '🍬', name: 'Jellybean' },
+        curiosity: { emoji: '🎲', name: 'Mini Board Game Die' },
+        subtitle: 'Rapid brain cell creation & tiny paddle hands!',
+        milestones: [
+          'Baby’s brain is creating roughly 100,000 new nerve cells every single minute this week!',
+          'Arm and leg buds lengthen and flatten at the ends into cute little paddles.',
+          'Both hemispheres of the brain are growing rapidly, making the head look delightfully oversized.'
+        ],
+        careTitle: 'Extra Rest Is Productive',
+        careBody: 'Building a placenta from scratch takes huge energy—napping is hard developmental work!',
+        careTag: 'Brain Boom',
+        wonderTitle: 'Blueberry Brainiac',
+        wonderBody: 'Baby has doubled in size since last week and is already forming a mouth and tiny nostrils.',
+        wonderTag: '100k Neurons/Min'
+      },
+      {
+        week: 8, lengthCm: 1.6, weightG: 1.0,
+        produce: { emoji: '🍓', name: 'Ripe Raspberry' },
+        bakery: { emoji: '🐻', name: 'Gummy Bear' },
+        curiosity: { emoji: '💍', name: 'Signet Ring Gem' },
+        subtitle: 'Webbed fingers & toes appear + spontaneous wiggles!',
+        milestones: [
+          'Tiny webbed fingers and toes are emerging from baby’s hands and feet.',
+          'The embryonic tail is almost completely gone, and baby starts making spontaneous little twitches!',
+          'Taste buds are starting to form on the surface of the tiny tongue.'
+        ],
+        careTitle: 'First Prenatal Appointment Window',
+        careBody: 'Many clinics perform a dating ultrasound around Week 8 to confirm your due date of March 9, 2027.',
+        careTag: 'Dating Ultrasound',
+        wonderTitle: 'Secret Acrobat',
+        wonderBody: 'Baby is already wiggling and bobbing inside the amniotic sac, though they’re still too tiny for you to feel yet.',
+        wonderTag: 'Webbed Fingers'
+      },
+      {
+        week: 9, lengthCm: 2.3, weightG: 2.0,
+        produce: { emoji: '🍒', name: 'Sweet Cherry' },
+        bakery: { emoji: '🥧', name: 'Pecan Tattie Bite' },
+        curiosity: { emoji: '🫒', name: 'Cocktail Olive' },
+        subtitle: 'Heart divides into 4 chambers & tiny earlobes form!',
+        milestones: [
+          'The heart finishes dividing into four separate chambers, and valves start forming.',
+          'Tiny muscles are developing, allowing baby to bend their elbows and wrists.',
+          'Eyelids now cover the eyes and will stay fused shut until around Week 27 to protect delicate optics.'
+        ],
+        careTitle: 'Blood Work & Prenatal Panel',
+        careBody: 'Standard first-trimester blood work checks blood type, iron levels, and immunity markers.',
+        careTag: '4 Heart Chambers',
+        wonderTitle: 'Tiny Tooth Buds',
+        wonderBody: 'Deep inside baby’s gums, 20 tiny buds for future baby teeth are already in place!',
+        wonderTag: '20 Tooth Buds'
+      },
+      {
+        week: 10, lengthCm: 3.1, weightG: 4.0,
+        produce: { emoji: '🍓', name: 'Garden Strawberry' },
+        bakery: { emoji: '🍊', name: 'Candied Kumquat' },
+        curiosity: { emoji: '🍾', name: 'Champagne Cork' },
+        subtitle: 'Graduation from embryo to fetus + tiny fingernails!',
+        milestones: [
+          'Milestone alert! Baby officially graduates from an "embryo" to a "fetus" as all vital organs are formed.',
+          'Webbing between fingers and toes disappears, leaving 10 distinct fingers and 10 toes.',
+          'Soft cartilage is beginning to harden into real bone, and fingernail beds appear.'
+        ],
+        careTitle: 'NIPT Screening Option',
+        careBody: 'From Week 10 onward, optional Non-Invasive Prenatal Testing (NIPT) blood screening can check chromosomal health.',
+        careTag: 'Official Fetus! 🎉',
+        wonderTitle: 'Ten Little Fingers',
+        wonderBody: 'Baby can now bend their arms at the elbow and rest their tiny hands over their heart.',
+        wonderTag: 'Bones Hardening'
+      },
+      {
+        week: 11, lengthCm: 4.1, weightG: 7.0,
+        produce: { emoji: '🟢', name: 'Tangy Key Lime' },
+        bakery: { emoji: '🧁', name: 'French Macaron' },
+        curiosity: { emoji: '⛳', name: 'Golf Ball' },
+        subtitle: 'Hiccup reflexes & stretching somersaults!',
+        milestones: [
+          'The diaphragm is formed, meaning baby can start practicing tiny underwater hiccups!',
+          'Hair follicles are forming across the crown of the head and tiny eyebrows.',
+          'Baby’s head makes up nearly half of their total body length right now.'
+        ],
+        careTitle: 'Doppler Heartbeat Listen',
+        careBody: 'At appointments near Week 11–12, providers can often pick up the rapid "galloping horses" heartbeat with a handheld Doppler.',
+        careTag: 'Tiny Hiccups',
+        wonderTitle: 'Graceful Somersaults',
+        wonderBody: 'Baby stretches, rolls, and kicks off the uterine wall like an astronaut floating in zero gravity.',
+        wonderTag: 'Diaphragm Active'
+      },
+      {
+        week: 12, lengthCm: 5.4, weightG: 14.0,
+        produce: { emoji: '🍑', name: 'Juicy Plum' },
+        bakery: { emoji: '🥐', name: 'Warm Dinner Roll' },
+        curiosity: { emoji: '🐚', name: 'Ocean Seashell' },
+        subtitle: 'Digestive reflexes, bone marrow & curling toes!',
+        milestones: [
+          'Baby’s reflexes are kicking in: if you poke your belly during an ultrasound, baby will wiggle in response!',
+          'Bone marrow is busy producing infection-fighting white blood cells.',
+          'The digestive system begins practicing contraction movements (peristalsis).'
+        ],
+        careTitle: 'Nuchal Translucency (NT) Scan Window',
+        careBody: 'Weeks 11–13 are the window for the optional first-trimester ultrasound screen.',
+        careTag: '12-Week Scan',
+        wonderTitle: 'Curling Toes',
+        wonderBody: 'Baby can now open and close their fingers and curl their tiny toes.',
+        wonderTag: 'Reflexes Active'
+      },
+      {
+        week: 13, lengthCm: 7.4, weightG: 23.0,
+        produce: { emoji: '🍋', name: 'Amalfi Lemon' },
+        bakery: { emoji: '🧁', name: 'Frosted Cupcake' },
+        curiosity: { emoji: '🫛', name: 'Sweet Pea Pod' },
+        subtitle: 'Unique fingerprints & vocal cords wrap up Trimester 1!',
+        milestones: [
+          'One-of-a-kind swirls and ridges—baby’s unique fingerprints—are now etched onto their fingertips!',
+          'Tiny vocal cords are forming inside the larynx, preparing for their first cry at birth.',
+          'The placenta is now fully functional, taking over hormone production and smoothing out early nausea.'
+        ],
+        careTitle: 'Final Week of the 1st Trimester!',
+        careBody: 'Many parents feel their energy returning as the placenta takes over hormone duties.',
+        careTag: 'Unique Fingerprints',
+        wonderTitle: 'One of a Kind',
+        wonderBody: 'No human in history has ever had—or will ever have—the exact fingerprints that just formed on your baby’s hands.',
+        wonderTag: 'End of Trimester 1'
+      },
+      {
+        week: 14, lengthCm: 8.7, weightG: 43.0,
+        produce: { emoji: '🍑', name: 'Fuzzy Peach' },
+        bakery: { emoji: '🍩', name: 'Glazed Doughnut Fist' },
+        curiosity: { emoji: '🐥', name: 'Fluffy Canary' },
+        subtitle: 'Welcome to the 2nd Trimester! Smiles, grimaces & thumb-sucking!',
+        milestones: [
+          'Welcome to Trimester 2 (starting Sep 8, 2026)! Note: From Week 14 onward, length is measured crown-to-heel.',
+          'Facial muscles are active—baby practices squinting, frowning, and smiling!',
+          'Fine, downy hair called lanugo begins growing to keep baby cozy and warm.'
+        ],
+        careTitle: 'Hello, Golden Second Trimester! 🌸',
+        careBody: 'Often called the "honeymoon trimester," appetite and energy frequently bounce back now.',
+        careTag: '2nd Trimester Starts',
+        wonderTitle: 'Thumb-Sucking Pro',
+        wonderBody: 'Ultrasounds at Week 14 sometimes catch baby happily sucking their thumb!',
+        wonderTag: 'Facial Expressions'
+      },
+      {
+        week: 15, lengthCm: 10.1, weightG: 70.0,
+        produce: { emoji: '🍎', name: 'Honeycrisp Apple' },
+        bakery: { emoji: '🧇', name: 'Belgian Cinnamon Roll' },
+        curiosity: { emoji: '🐹', name: 'Pocket Hamster' },
+        subtitle: 'Light sensing through closed eyelids & ear bones hardening!',
+        milestones: [
+          'Even though eyelids are fused shut, baby can now sense bright light shining outside your belly!',
+          'Three tiny bones in the inner ear are hardening, gearing up for the first sounds.',
+          'Legs are now growing longer than arms, and all joints can move smoothly.'
+        ],
+        careTitle: 'Sleeping on Your Side',
+        careBody: 'Around mid-pregnancy, using a pregnancy pillow to sleep on your side keeps blood flow optimal.',
+        careTag: 'Senses Light',
+        wonderTitle: 'Flashlight Tag',
+        wonderBody: 'If you shine a flashlight near your tummy, baby may turn away or toward the warm glow!',
+        wonderTag: 'Inner Ear Forming'
+      },
+      {
+        week: 16, lengthCm: 11.6, weightG: 100.0,
+        produce: { emoji: '🥑', name: 'Hass Avocado' },
+        bakery: { emoji: '🥧', name: 'Warm Apple Turnover' },
+        curiosity: { emoji: '🪆', name: 'Nested Wooden Doll' },
+        subtitle: 'Pumping 25 quarts of blood daily & scalp hair patterning!',
+        milestones: [
+          'Baby’s heart now pumps about 25 quarts of blood each day—and will keep increasing!',
+          'Scalp hair pattern is locked in, and tiny eyelashes and eyebrows are filling out.',
+          'The nervous system allows much more coordinated limb movements and hand grasps.'
+        ],
+        careTitle: 'Routine 16-Week Check-up',
+        careBody: 'Your provider will check blood pressure, measure fundal height, and listen to baby’s strong heartbeat.',
+        careTag: '100 Grams Milestone!',
+        wonderTitle: 'Holding Hands (With Self!)',
+        wonderBody: 'Baby’s hands can now reach each other and clasp together—or grab onto the umbilical cord like a toy.',
+        wonderTag: 'Coordinated Grasps'
+      },
+      {
+        week: 17, lengthCm: 13.0, weightG: 140.0,
+        produce: { emoji: '🍐', name: 'Bartlett Pear' },
+        bakery: { emoji: '🥨', name: 'Bavarian Soft Pretzel' },
+        curiosity: { emoji: '🎮', name: 'Game Controller' },
+        subtitle: 'Adipose fat stores begin & placenta grows strong!',
+        milestones: [
+          'Special "brown fat" begins forming under the skin to help regulate body temperature after birth.',
+          'Sweat glands are developing across the skin.',
+          'The umbilical cord is growing thicker and stronger as it delivers nutrients around the clock.'
+        ],
+        careTitle: 'Vivid Pregnancy Dreams',
+        careBody: 'Hormonal shifts and lighter sleep cycles often spark vivid, storybook dreams during the second trimester.',
+        careTag: 'Brown Fat Forming',
+        wonderTitle: 'Practicing Swallowing',
+        wonderBody: 'Baby swallows amniotic fluid every day, practicing both sucking and digestive skills.',
+        wonderTag: 'Strong Umbilical Cord'
+      },
+      {
+        week: 18, lengthCm: 14.2, weightG: 190.0,
+        produce: { emoji: '🫑', name: 'Sweet Bell Pepper' },
+        bakery: { emoji: '🥐', name: 'Almond Croissant' },
+        curiosity: { emoji: '🏮', name: 'Mini Paper Lantern' },
+        subtitle: 'Yawning, hiccupping & hearing your heartbeat!',
+        milestones: [
+          'Ears have reached their final position on the sides of the head, and baby hears the whoosh of your blood and heartbeat!',
+          'Myelin—a protective insulation—begins wrapping around nerves to speed up brain signals.',
+          'Baby has developed a favorite pastime: yawning! Ultrasounds frequently catch big sleepy yawns.'
+        ],
+        careTitle: 'Getting Ready for the Anatomy Scan',
+        careBody: 'If you haven’t scheduled your 20-week anatomy ultrasound yet, now is the time to put it on the calendar!',
+        careTag: 'Hears Your Voice',
+        wonderTitle: 'Big Sleepy Yawns',
+        wonderBody: 'Between acrobatic flips, baby takes cozy 20-to-40 minute naps and yawns wide.',
+        wonderTag: 'Nerve Myelin'
+      },
+      {
+        week: 19, lengthCm: 15.3, weightG: 240.0,
+        produce: { emoji: '🍅', name: 'Heirloom Tomato / Mango' },
+        bakery: { emoji: '🥧', name: 'Artisanal Berry Tart' },
+        curiosity: { emoji: '🦔', name: 'Storybook Hedgehog' },
+        subtitle: '⭐ Reference Anchor (Oct 13, 2026): Sensory brain centers & vernix coating!',
+        milestones: [
+          'Brain Superpower Week: Dedicated regions in baby’s brain for taste, smell, hearing, vision, and touch are lighting up!',
+          'Vernix caseosa—a creamy, protective moisturizer—coats baby’s skin to protect it from the amniotic waters.',
+          'Kidneys are producing urine, and scalp hair is sprouting while kicks become noticeably stronger!'
+        ],
+        careTitle: 'Mid-Pregnancy Check & Anatomy Scan Window',
+        careBody: 'At 19w 0d (Tue, Oct 13, 2026), you are just 7 days away from the official halfway mark and right in the 18–22w ultrasound window!',
+        careTag: 'Anchor Week (Oct 13)',
+        wonderTitle: 'Noticeable Kicks & Voice Bonding',
+        wonderBody: 'Baby is ~15.3 cm (6 in) and 240 g (8.5 oz). They can hear your muffled voice and music—and may kick back to say hello!',
+        wonderTag: '5 Senses Awakening'
+      },
+      {
+        week: 20, lengthCm: 25.6, weightG: 300.0,
+        produce: { emoji: '🍌', name: 'Golden Banana' },
+        bakery: { emoji: '🥖', name: 'Demi French Baguette' },
+        curiosity: { emoji: '🧸', name: 'Plush Pocket Bear' },
+        subtitle: '🎉 HALFWAY PARTY (Oct 20, 2026)! 20 weeks down, 20 weeks to go!',
+        milestones: [
+          'Happy Halfway Day on Tuesday, October 20, 2026! You have completed 140 of 280 days!',
+          'Baby is swallowing more amniotic fluid this week, which helps exercise and mature their digestive system.',
+          'Taste buds can now detect subtle flavors from the foods you eat passed through the amniotic fluid!'
+        ],
+        careTitle: '20-Week Detailed Anatomy Scan 🎉',
+        careBody: 'This comprehensive ultrasound checks baby’s heart, brain, spine, kidneys, placenta position, and limbs.',
+        careTag: '50% Complete! 🎉',
+        wonderTitle: 'Tasting Your Menu',
+        wonderBody: 'Sweet, garlic, or spiced flavors from your meals gently flavor the amniotic fluid—giving baby their first culinary tour!',
+        wonderTag: 'Halfway Milestone'
+      },
+      {
+        week: 21, lengthCm: 26.7, weightG: 360.0,
+        produce: { emoji: '🥕', name: 'Garden Carrot' },
+        bakery: { emoji: '🍫', name: 'Chocolate Éclair' },
+        curiosity: { emoji: '🧦', name: 'Knit Baby Bootie Pair' },
+        subtitle: 'Coordinated kicks & bone marrow taking over blood production!',
+        milestones: [
+          'Bone marrow now takes over from the liver and spleen as the primary producer of red blood cells.',
+          'Gentle flutters turn into unmistakable kicks, nudges, and karate chops as limbs grow stronger.',
+          'Baby has established regular sleep and wake cycles—often waking up right when you lie down to rest!'
+        ],
+        careTitle: 'Stretching & Hydration',
+        careBody: 'Gentle prenatal yoga, magnesium-rich foods, and plenty of water help prevent second-trimester leg cramps.',
+        careTag: 'Strong Karate Kicks',
+        wonderTitle: 'Night Owl Acrobat',
+        wonderBody: 'Your walking motions gently rock baby to sleep during the day, so when you lie still at night, it’s party time!',
+        wonderTag: 'Sleep-Wake Cycles'
+      },
+      {
+        week: 22, lengthCm: 27.8, weightG: 430.0,
+        produce: { emoji: '🥥', name: 'Young Coconut / Papaya' },
+        bakery: { emoji: '🍞', name: 'Mini Brioche Loaf' },
+        curiosity: { emoji: '🪁', name: 'Velvet Pouch' },
+        subtitle: 'Distinct lips, eyebrows & a strong grip!',
+        milestones: [
+          'Eyebrows, eyelashes, and distinct lips are clearly formed—baby looks like a miniature newborn!',
+          'Baby’s grip is surprisingly strong now; they love holding their own feet and ears.',
+          'The pancreas is developing steadily to produce important hormones.'
+        ],
+        careTitle: 'Partner Can Feel Kicks Outside!',
+        careBody: 'Around Week 22, a hand placed patiently on your belly can often feel baby’s kicks from the outside.',
+        careTag: 'Share the Kicks',
+        wonderTitle: 'Miniature Newborn Look',
+        wonderBody: 'Weighing nearly a full pound (430 g), baby now has proportional features, tiny fingernails, and eyebrows.',
+        wonderTag: 'Nearly 1 Pound'
+      },
+      {
+        week: 23, lengthCm: 28.9, weightG: 501.0,
+        produce: { emoji: '🥭', name: 'Large Ruby Grapefruit' },
+        bakery: { emoji: '🧁', name: 'Jumbo Berry Muffin' },
+        curiosity: { emoji: '🎧', name: 'Cozy Headphones' },
+        subtitle: 'Over 1 pound! Lung blood vessels & recognizing voices!',
+        milestones: [
+          'Baby officially passes the half-kilogram / 1.1-pound mark this week!',
+          'Blood vessels in the lungs are developing rapidly to prepare for breathing air.',
+          'Hearing is keen: baby recognizes the rhythm and pitch of familiar voices and favorite songs.'
+        ],
+        careTitle: 'Comfort & Posture Support',
+        careBody: 'As your center of gravity shifts, supportive footwear and lumbar pillows keep your back happy.',
+        careTag: 'Over 1.1 Pounds!',
+        wonderTitle: 'Dancing to the Beat',
+        wonderBody: 'Play an upbeat song and watch your belly—baby may respond with a little wiggle dance!',
+        wonderTag: 'Lung Vessels Grow'
+      },
+      {
+        week: 24, lengthCm: 30.0, weightG: 600.0,
+        produce: { emoji: '🌽', name: 'Sweet Ear of Corn' },
+        bakery: { emoji: '🥖', name: 'Cinnamon Babka Twist' },
+        curiosity: { emoji: '🎤', name: 'Vintage Microphone' },
+        subtitle: '🌟 Viability Milestone (Nov 17, 2026) & lung surfactant!',
+        milestones: [
+          'Major Milestone (Tue, Nov 17, 2026): Week 24 marks fetal viability, where baby has a strong chance of thriving with specialized care if born early.',
+          'Lungs begin producing surfactant, a vital substance that helps tiny air sacs inflate without sticking.',
+          'Inner ear balance organs are mature—baby knows whether they are upside-down or right-side-up!'
+        ],
+        careTitle: 'Glucose Screening Window (24–28 Weeks)',
+        careBody: 'Between Weeks 24 and 28, routine glucose screening checks how your body processes sugar during pregnancy.',
+        careTag: 'Viability Milestone 🌟',
+        wonderTitle: 'Foot-Long Baby!',
+        wonderBody: 'At 30 cm (about 12 inches), baby is now the length of a standard ruler from head to toe!',
+        wonderTag: '30 cm (1 Foot) Long'
+      },
+      {
+        week: 25, lengthCm: 34.6, weightG: 660.0,
+        produce: { emoji: '🥦', name: 'Cauliflower Blossom' },
+        bakery: { emoji: '🍰', name: 'Layered Sponge Cake' },
+        curiosity: { emoji: '🧤', name: 'Pair of Winter Mittens' },
+        subtitle: 'Pink skin capillaries, open nostrils & startle reflex!',
+        milestones: [
+          'Tiny capillaries are filling with blood under the skin, giving it a rosy pink hue.',
+          'Baby’s nostrils unplug and open up, allowing them to practice "breathing" amniotic fluid in and out.',
+          'The Moro (startle) reflex is active—a sudden loud noise might make baby jump!'
+        ],
+        careTitle: 'Iron-Rich Nutrition',
+        careBody: 'Leafy greens, beans, lean proteins, and vitamin C help support your expanding blood volume.',
+        careTag: 'Practice Breathing',
+        wonderTitle: 'Hair Has Color & Texture',
+        wonderBody: 'If your baby is born with hair, its color and curl pattern are now showing up!',
+        wonderTag: 'Nostrils Open'
+      },
+      {
+        week: 26, lengthCm: 35.6, weightG: 760.0,
+        produce: { emoji: '🥬', name: 'Crisp Romaine Heart' },
+        bakery: { emoji: '🥞', name: 'Tall Stack of Pancakes' },
+        curiosity: { emoji: '🎳', name: 'Mini Bowling Pin' },
+        subtitle: 'Eyelids prepare to blink open & immune antibodies transfer!',
+        milestones: [
+          'Baby begins absorbing protective antibodies from your bloodstream to build their immune system.',
+          'Retinas are fully formed, and baby’s eyelids are getting ready to blink open for the very first time!',
+          'Brain wave activity for hearing and sight now resembles that of a newborn.'
+        ],
+        careTitle: 'Checking In on Nursery & Birth Plans',
+        careBody: 'With two weeks left in the second trimester, it’s a peaceful time to explore childbirth classes or nursery ideas.',
+        careTag: 'Immune Boost',
+        wonderTitle: 'First Peek Coming Soon',
+        wonderBody: 'After four months with fused eyelids, baby is about to open their eyes and see the rosy glow of the womb.',
+        wonderTag: 'Retinas Ready'
+      },
+      {
+        week: 27, lengthCm: 36.6, weightG: 875.0,
+        produce: { emoji: '🥦', name: 'Large Broccoli Crown' },
+        bakery: { emoji: '🍞', name: 'Artisanal Sourdough Boule' },
+        curiosity: { emoji: '⛺', name: 'Cozy Lantern' },
+        subtitle: 'Blinking eyes, REM dreaming & wrapping up Trimester 2!',
+        milestones: [
+          'Baby opens and closes their eyes now, complete with long little eyelashes!',
+          'Regular intervals of REM (Rapid Eye Movement) sleep suggest baby may already be dreaming!',
+          'Rhythmic little thumps? Those are baby hiccups—usually lasting a few minutes and totally harmless.'
+        ],
+        careTitle: 'Final Week of the 2nd Trimester!',
+        careBody: 'You’ve nearly completed two-thirds of your journey! Bi-weekly prenatal visits typically begin soon.',
+        careTag: 'Eyes Blink Open 👀',
+        wonderTitle: 'What Do Babies Dream About?',
+        wonderBody: 'During REM sleep, baby’s brain is busy wiring memories of your voice, warmth, and gentle rocking.',
+        wonderTag: 'REM Dreaming'
+      },
+      {
+        week: 28, lengthCm: 37.6, weightG: 1005.0,
+        produce: { emoji: '🍆', name: 'Glossy Eggplant' },
+        bakery: { emoji: '🎂', name: 'Two-Tier Bento Cake' },
+        curiosity: { emoji: '🧸', name: 'Classic Teddy Bear' },
+        subtitle: '🧸 Welcome to the 3rd Trimester (Dec 15, 2026) & 1 Kilogram!',
+        milestones: [
+          'Hello, Third Trimester (starting Tue, Dec 15, 2026)! Only 12 weeks remain until March 9, 2027!',
+          'Baby tops 1 kilogram (2.2 lbs) and is adding plump baby fat under their skin.',
+          'The brain’s surface is developing characteristic grooves and folds (gyri and sulci) as intelligence centers expand.'
+        ],
+        careTitle: 'Tdap Booster & Rh Factor Check',
+        careBody: 'Weeks 27–32 are the standard window for the Tdap vaccine to pass protective antibodies to baby.',
+        careTag: '3rd Trimester! 🧸',
+        wonderTitle: 'One Kilogram Cutie',
+        wonderBody: 'At 1,005 grams, baby can blink, cough, suck, hiccup, and take practice breaths!',
+        wonderTag: 'Over 1 kg (2.2 lbs)'
+      },
+      {
+        week: 29, lengthCm: 38.6, weightG: 1150.0,
+        produce: { emoji: '🎃', name: 'Butternut Squash' },
+        bakery: { emoji: '🍍', name: 'Pineapple Upside-Down Cake' },
+        curiosity: { emoji: '🌺', name: 'Hawaiian Bouquet' },
+        subtitle: 'Energetic rolls, stretches & bone calcium absorption!',
+        milestones: [
+          'Roughly 250 mg of calcium is deposited into baby’s hardening skeleton every single day now!',
+          'As space gets cozier, big somersaults transition into strong stretches, elbow pokes, and knee rolls.',
+          'Baby’s white fat stores are plumping up, smoothing out wrinkled skin.'
+        ],
+        careTitle: 'Counting Baby Kicks',
+        careBody: 'Many providers recommend noticing daily movement patterns—like feeling 10 movements within an active hour.',
+        careTag: 'Daily Kick Counts',
+        wonderTitle: 'Strong Little Bones',
+        wonderBody: 'Drink up that calcium! Baby is building strong bones while keeping their skull plates flexible for birth.',
+        wonderTag: '250mg Calcium/Day'
+      },
+      {
+        week: 30, lengthCm: 39.9, weightG: 1320.0,
+        produce: { emoji: '🥬', name: 'Savoy Cabbage' },
+        bakery: { emoji: '🥧', name: 'Deep-Dish Lattice Pie' },
+        curiosity: { emoji: '🎩', name: 'Storybook Top Hat' },
+        subtitle: '3/4 of the way there! Brain temperature regulation & 3 lbs!',
+        milestones: [
+          '30 weeks down, 10 weeks to go! You are officially 75% through your pregnancy!',
+          'Because the brain and fat cells can now regulate body temperature, the downy lanugo hair begins shedding.',
+          'Hands are fully coordinated and can grasp a finger tightly.'
+        ],
+        careTitle: 'Bi-Weekly Prenatal Visits',
+        careBody: 'From Week 28 to 36, check-ups usually happen every two weeks to track baby’s growth and position.',
+        careTag: '75% Complete!',
+        wonderTitle: 'Seeing Dim Shapes',
+        wonderBody: 'Baby’s pupils can now constrict and dilate in response to light filtering through your tummy.',
+        wonderTag: 'Pupil Reflex Active'
+      },
+      {
+        week: 31, lengthCm: 41.1, weightG: 1500.0,
+        produce: { emoji: '🥥', name: 'Jumbo Husked Coconut' },
+        bakery: { emoji: '🥖', name: 'Braided Challah Loaf' },
+        curiosity: { emoji: '🏈', name: 'Junior Foam Football' },
+        subtitle: 'All five senses working together & rapid neural connections!',
+        milestones: [
+          'All five senses—sight, hearing, taste, touch, and smell—are now fully operational!',
+          'Trillions of neural connections are firing as baby processes sounds, movements, and tastes.',
+          'At 1.5 kg (3.3 lbs), baby is entering their biggest weight-gain phase of pregnancy.'
+        ],
+        careTitle: 'Braxton Hicks Practice Contractions',
+        careBody: 'Occasional, painless tightening of the belly ("practice contractions") is your uterus toning up for delivery.',
+        careTag: 'All 5 Senses Live',
+        wonderTitle: 'Recognizing Stories & Songs',
+        wonderBody: 'Studies show babies read the same rhyme from Week 31 onward recognize and calm down to that story after birth!',
+        wonderTag: 'Memory Forming'
+      },
+      {
+        week: 32, lengthCm: 42.4, weightG: 1700.0,
+        produce: { emoji: '🍈', name: 'Sweet Cantaloupe / Jicama' },
+        bakery: { emoji: '🍰', name: 'Boston Cream Cake' },
+        curiosity: { emoji: '🧺', name: 'Picnic Bread Basket' },
+        subtitle: 'Toenails finished, practicing breathing & settling head-down!',
+        milestones: [
+          'Tiny toenails and fingernails have reached the tips of baby’s fingers and toes.',
+          'Up to 40% of baby’s respiratory time is spent practicing rhythmic breathing motions.',
+          'Many babies begin turning into the head-down (cephalic) position around Week 32.'
+        ],
+        careTitle: 'Hospital Tour & Birth Preferences',
+        careBody: 'Now is a great week to finalize your birth preferences and learn where to check in at your birth center or hospital.',
+        careTag: 'Toenails Complete',
+        wonderTitle: 'Chubby Cheeks Arriving',
+        wonderBody: 'Baby’s skin is no longer translucent—plump fat layers give them adorable, pinchable cheeks!',
+        wonderTag: 'Nearly 4 Pounds'
+      },
+      {
+        week: 33, lengthCm: 43.7, weightG: 1920.0,
+        produce: { emoji: '🍍', name: 'Golden Pineapple' },
+        bakery: { emoji: '🍞', name: 'Large Panettone Sweet Bread' },
+        curiosity: { emoji: '🎒', name: 'Toddler Mini Backpack' },
+        subtitle: 'Custom immune system & flexible skull plates!',
+        milestones: [
+          'Baby now has their very own functional immune system, fortified by antibodies from you!',
+          'While body bones are sturdy, skull plates remain soft and separated so they can gently mold during birth.',
+          'Amniotic fluid volume peaks this week, meaning you’ll feel every roll and stretch clearly!'
+        ],
+        careTitle: 'Packing the Hospital Bag Soon',
+        careBody: 'Start gathering cozy socks, a going-home outfit for baby, and a long phone charger for your hospital bag.',
+        careTag: 'Immune System Ready',
+        wonderTitle: 'Pineapple-Sized Snuggler',
+        wonderBody: 'At over 4.2 pounds, baby fills up most of the uterus and curls into the classic cozy "fetal position."',
+        wonderTag: '4.2+ Pounds'
+      },
+      {
+        week: 34, lengthCm: 45.0, weightG: 2150.0,
+        produce: { emoji: '🍈', name: 'Honeydew Melon' },
+        bakery: { emoji: '🎂', name: 'Gingerbread Cottage' },
+        curiosity: { emoji: '🎸', name: 'Soprano Ukulele' },
+        subtitle: 'Thick vernix coat & mature lungs!',
+        milestones: [
+          'Baby’s central nervous system and lungs are rapidly maturing.',
+          'The creamy vernix coating thickens to protect skin as baby prepares for the outside world.',
+          'Fingernails are so long now that baby might even need a tiny nail file right after birth!'
+        ],
+        careTitle: 'Checking Baby’s Position',
+        careBody: 'Your provider can feel your belly (Leopold’s maneuvers) to tell where baby’s head, back, and feet are resting.',
+        careTag: '45 cm Long!',
+        wonderTitle: 'Listening to Conversations',
+        wonderBody: 'Baby’s ears are so well-tuned now that their heart rate actually slows down calmly when you speak softly.',
+        wonderTag: 'Soothing Voice'
+      },
+      {
+        week: 35, lengthCm: 46.2, weightG: 2380.0,
+        produce: { emoji: '🍍', name: 'Jumbo Maui Pineapple' },
+        bakery: { emoji: '🥐', name: 'Giant Bakery Brioche Crown' },
+        curiosity: { emoji: '🐇', name: 'Cozy Bunny Rabbit' },
+        subtitle: 'Kidneys & liver fully developed + gaining 1/2 lb per week!',
+        milestones: [
+          'Physical development is essentially complete! Baby’s primary job for the next 5 weeks is plumping up.',
+          'Kidneys are fully developed, and the liver can now process waste products on its own.',
+          'Baby gains roughly 200–250 grams (about half a pound) every single week now!'
+        ],
+        careTitle: 'Group B Strep (GBS) Swab Upcoming',
+        careBody: 'Between Weeks 35 and 37, providers perform a quick, gentle swab to check for routine Group B Strep.',
+        careTag: 'Over 5.2 Pounds',
+        wonderTitle: 'Rolling Waves on Your Belly',
+        wonderBody: 'When baby stretches a foot or knee now, you can often watch a little wave ripple right across your shirt!',
+        wonderTag: 'Organs Complete'
+      },
+      {
+        week: 36, lengthCm: 47.4, weightG: 2620.0,
+        produce: { emoji: '🥬', name: 'Large Napa Cabbage' },
+        bakery: { emoji: '🎂', name: 'Festive Bundt Cake' },
+        curiosity: { emoji: '🐶', name: 'Teacup Puppy' },
+        subtitle: 'Entering Month 9! Sucking muscles & "lightening" drop!',
+        milestones: [
+          'Cheek muscles and sucking pads are plump and ready for nursing or bottle feeding right after birth.',
+          'Digestive system is primed and ready for its very first meal of colostrum or milk.',
+          'Baby may begin "lightening" (dropping lower into the pelvis), making it easier for you to catch a deep breath!'
+        ],
+        careTitle: 'Weekly Prenatal Visits Begin!',
+        careBody: 'Starting at Week 36, you’ll typically see your care provider once a week until delivery day.',
+        careTag: 'Weekly Check-ups',
+        wonderTitle: 'Car Seat Ready?',
+        wonderBody: 'With Early Term just one week away, installing the infant car seat brings wonderful peace of mind.',
+        wonderTag: 'Nearly 6 Pounds'
+      },
+      {
+        week: 37, lengthCm: 48.6, weightG: 2860.0,
+        produce: { emoji: '🥬', name: 'Bundle of Swiss Chard' },
+        bakery: { emoji: '🍰', name: 'Three-Layer Berry Cake' },
+        curiosity: { emoji: '🐣', name: 'Cozy Baby Lamb Plush' },
+        subtitle: '🐣 Early Term Milestone (Feb 16, 2027)! Practicing inhaling & grasping!',
+        milestones: [
+          'Milestone (Tue, Feb 16, 2027): At 37 weeks, your pregnancy reaches "Early Term"!',
+          'Baby practices inhaling, exhaling, blinking, sucking, and turning toward light sources.',
+          'Most of the downy lanugo hair has vanished, replaced by smooth, rosy newborn skin.'
+        ],
+        careTitle: 'Early Term Window Arrives 🐣',
+        careBody: 'Hospital bag packed and car seat installed! Know the signs of labor vs. Braxton Hicks.',
+        careTag: 'Early Term (37w)',
+        wonderTitle: 'Head Full of Locks (Or Peach Fuzz!)',
+        wonderBody: 'Many babies at Week 37 already sport locks of hair up to an inch long!',
+        wonderTag: '6.3 Pounds'
+      },
+      {
+        week: 38, lengthCm: 49.8, weightG: 3080.0,
+        produce: { emoji: '🎃', name: 'Sugar Pie Pumpkin' },
+        bakery: { emoji: '🥧', name: 'Holiday Croquembouche Tower' },
+        curiosity: { emoji: '🐱', name: 'Curled-Up House Cat' },
+        subtitle: 'Firm hand grasp, vocal cords ready & tear ducts open!',
+        milestones: [
+          'Baby crosses the 3-kilogram (6.8 lbs) mark and measures nearly 50 cm (19.6 in)!',
+          'Tear ducts have opened up, and vocal cords are tuned for that triumphant first newborn cry.',
+          'Brain weighs about 14 ounces now and will keep growing rapidly through early childhood.'
+        ],
+        careTitle: 'Rest, Nesting & Hydration',
+        careBody: 'If you get a sudden burst of "nesting" energy to fold tiny onesies, remember to pace yourself and rest too!',
+        careTag: 'Over 3 Kilograms!',
+        wonderTitle: 'Eye Color Mystery',
+        wonderBody: 'Whether baby keeps their newborn slate-blue/brown eyes or changes shade over the first year is a fun surprise!',
+        wonderTag: '6.8 Pounds'
+      },
+      {
+        week: 39, lengthCm: 50.7, weightG: 3290.0,
+        produce: { emoji: '🍉', name: 'Mini Sugar Baby Watermelon' },
+        bakery: { emoji: '🎂', name: 'Grand Celebration Cake' },
+        curiosity: { emoji: '👑', name: 'Royal Crown Cushion' },
+        subtitle: '👑 Officially FULL TERM (Mar 2, 2027)! Ready to meet the world!',
+        milestones: [
+          'Major Milestone (Tue, Mar 2, 2027): Week 39 is officially "Full Term" according to obstetric guidelines!',
+          'Lungs are producing maximum surfactant for baby’s very first deep breath of fresh air.',
+          'Baby continues adding cozy fat stores while waiting for the moment to say hello.'
+        ],
+        careTitle: 'Full Term Arrival Window 👑',
+        careBody: 'Babies born in Week 39–40 are right on schedule. Rest up, enjoy cozy snacks, and savor these final days!',
+        careTag: 'Full Term (39w) 👑',
+        wonderTitle: '300 Bones at Birth',
+        wonderBody: 'Fun fact: Your newborn actually has ~300 bones (adults have 206)—many fuse together as they grow!',
+        wonderTag: '7.25 Pounds'
+      },
+      {
+        week: 40, lengthCm: 51.2, weightG: 3460.0,
+        produce: { emoji: '🍉', name: 'Sweet Garden Watermelon' },
+        bakery: { emoji: '🎂', name: 'Showstopper Wedding Tier Cake' },
+        curiosity: { emoji: '🎁', name: 'The Best Gift Ever' },
+        subtitle: '🎂 EXPECTED DUE DATE (Tuesday, March 9, 2027)! Happy 40 Weeks!',
+        milestones: [
+          'Happy Expected Due Date on Tuesday, March 9, 2027! Full 40 weeks (280 days) from June 2, 2026!',
+          'At ~51.2 cm (20.2 inches) and ~3,460 g (7.6 lbs), baby is snug, healthy, and ready for cuddles!',
+          'Remember: Only about 5% of babies arrive on their exact due date—any day now, your sweetest adventure begins!'
+        ],
+        careTitle: 'Expected Due Date: March 9, 2027 🎂',
+        careBody: 'Congratulations on reaching Week 40! Your care team will monitor you closely as you welcome your little one.',
+        careTag: 'Due Date: Mar 9, 2027 🎂',
+        wonderTitle: 'Hello, World!',
+        wonderBody: 'From a microscopic spark on June 16, 2026 to a 7.6-pound miracle in your arms—what an extraordinary journey!',
+        wonderTag: '100% Complete! 🎉'
+      }
+    ];
+
+    /*************************************************************************
+     * 2. KEY MILESTONE CHIPS FOR THE QUICK-JUMP RIBBON
+     *************************************************************************/
+    const MILESTONE_CHIPS = [
+      { week: 1, day: 0, icon: '🌱', label: 'Journey Starts', tag: 'Wk 1' },
+      { week: 2, day: 0, icon: '✨', label: 'Conception Spark', tag: 'Wk 2' },
+      { week: 6, day: 0, icon: '💓', label: 'First Heartbeat', tag: 'Wk 6' },
+      { week: 10, day: 0, icon: '🍓', label: 'Official Fetus', tag: 'Wk 10' },
+      { week: 14, day: 0, icon: '🌸', label: '2nd Trimester', tag: 'Wk 14' },
+      { week: 19, day: 0, icon: '🥭', label: 'Anchor (Oct 13)', tag: 'Wk 19 ⭐' },
+      { week: 20, day: 0, icon: '🎉', label: 'Halfway & Scan', tag: 'Wk 20' },
+      { week: 24, day: 0, icon: '🌟', label: 'Viability', tag: 'Wk 24' },
+      { week: 28, day: 0, icon: '🧸', label: '3rd Trimester', tag: 'Wk 28' },
+      { week: 37, day: 0, icon: '🐣', label: 'Early Term', tag: 'Wk 37' },
+      { week: 39, day: 0, icon: '👑', label: 'Full Term', tag: 'Wk 39' },
+      { week: 40, day: 0, icon: '🎂', label: 'Due Date!', tag: 'Wk 40' }
+    ];
+
+    /*************************************************************************
+     * 3. STATE MANAGEMENT
+     * Default Anchor: 19w 0d on Tuesday, Oct 13, 2026 -> LMP: Jun 2, 2026 -> EDD: Mar 9, 2027
+     *************************************************************************/
+    const state = {
+      anchorDateStr: '2026-10-13',
+      anchorWeeks: 19,
+      anchorDays: 0,
+      inspectedWeek: 19,
+      inspectedDayOffset: 0, // 0 to 6 days within the inspected week
+      comparisonTheme: 'produce', // 'produce' | 'bakery' | 'curiosity'
+      chartMode: 'length', // 'length' | 'weight'
+      soundEnabled: true,
+      autoPlayTimer: null,
+      unitMode: 'both' // 'both' | 'metric' | 'imperial'
+    };
+
+    /*************************************************************************
+     * 4. DATE ARITHMETIC HELPERS (Time-Zone Safe Local Noon UTC Parsing)
+     *************************************************************************/
+    function parseDateStr(yyyyMmDd) {
+      const [y, m, d] = yyyyMmDd.split('-').map(Number);
+      return new Date(Date.UTC(y, m - 1, d, 12, 0, 0));
+    }
+
+    function addDays(dateObj, days) {
+      const res = new Date(dateObj.getTime());
+      res.setUTCDate(res.getUTCDate() + days);
+      return res;
+    }
+
+    function formatShortDate(dateObj, includeYear = true) {
+      const opts = {
+        weekday: 'short',
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC'
+      };
+      if (includeYear) opts.year = 'numeric';
+      return dateObj.toLocaleDateString('en-US', opts);
+    }
+
+    function formatCompactDate(dateObj) {
+      return dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        timeZone: 'UTC'
+      });
+    }
+
+    function formatMonthDayYear(dateObj) {
+      return dateObj.toLocaleDateString('en-US', {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+        timeZone: 'UTC'
+      });
+    }
+
+    // Compute LMP (Week 0, Day 0) from current anchor state
+    function getLmpDate() {
+      const refDate = parseDateStr(state.anchorDateStr);
+      const totalAnchorDays = (state.anchorWeeks * 7) + state.anchorDays;
+      return addDays(refDate, -totalAnchorDays);
+    }
+
+    // Compute Date for any (week, dayOffset)
+    function getDateForGestation(week, dayOffset = 0) {
+      const lmp = getLmpDate();
+      return addDays(lmp, (week * 7) + dayOffset);
+    }
+
+    // Compute Expected Due Date (40w 0d = LMP + 280 days)
+    function getEddDate() {
+      return getDateForGestation(40, 0);
+    }
+
+    /*************************************************************************
+     * 5. GENTLE WEB AUDIO SYNTHESIZER (Zero External Assets, Playful Pops)
+     *************************************************************************/
+    let audioCtx = null;
+    function playPopSound(pitchMultiplier = 1) {
+      if (!state.soundEnabled) return;
+      try {
+        if (!audioCtx) {
+          audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') {
+          audioCtx.resume();
+        }
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.type = 'sine';
+        const baseFreq = 320 + (state.inspectedWeek * 9) * pitchMultiplier;
+        osc.frequency.setValueAtTime(baseFreq, audioCtx.currentTime);
+        osc.frequency.exponentialRampToValueAtTime(baseFreq * 1.35, audioCtx.currentTime + 0.085);
+
+        gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.09);
+
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        osc.start();
+        osc.stop(audioCtx.currentTime + 0.095);
+      } catch (e) {
+        // Ignore audio errors if blocked by browser policy
+      }
+    }
+
+    function playCelebrationChime() {
+      if (!state.soundEnabled) return;
+      const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+      notes.forEach((freq, idx) => {
+        setTimeout(() => {
+          try {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.type = 'triangle';
+            osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+            gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.28);
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+          } catch (e) {}
+        }, idx * 75);
+      });
+    }
+
+    function toggleSound() {
+      state.soundEnabled = !state.soundEnabled;
+      const icon = document.getElementById('sound-icon');
+      if (state.soundEnabled) {
+        icon.className = 'ph-fill ph-speaker-high text-lg text-berry';
+        playPopSound(1.2);
+      } else {
+        icon.className = 'ph-fill ph-speaker-slash text-lg text-slate-400';
+      }
+    }
+
+    /*************************************************************************
+     * 6. CUSTOM SVG BADGE ART GENERATOR FOR THE HERO STAGE
+     *************************************************************************/
+    function createWhimsicalBadgeSVG(emoji, week) {
+      // Palette shifts gently across trimesters
+      let ringColor = '#FF8FA3';
+      let bgGrad1 = '#FFF0F3';
+      let bgGrad2 = '#FFE5EC';
+      if (week >= 14 && week <= 27) {
+        ringColor = '#F4A261';
+        bgGrad1 = '#FFF8F0';
+        bgGrad2 = '#FFE8D6';
+      } else if (week >= 28) {
+        ringColor = '#9F7AEA';
+        bgGrad1 = '#F8F4FF';
+        bgGrad2 = '#E9D8FD';
+      }
+
+      return `
+        <div class="relative flex items-center justify-center w-36 h-36 animate-pop">
+          <svg class="w-full h-full" viewBox="0 0 140 140">
+            <defs>
+              <radialGradient id="badgeGrad" cx="50%" cy="40%" r="60%">
+                <stop offset="0%" stop-color="${bgGrad1}" />
+                <stop offset="100%" stop-color="${bgGrad2}" />
+              </radialGradient>
+            </defs>
+            <!-- Scalloped Storybook Badge Outer -->
+            <circle cx="70" cy="70" r="62" fill="url(#badgeGrad)" stroke="${ringColor}" stroke-width="3" stroke-dasharray="6 4" />
+            <!-- Sparkle stars inside badge -->
+            <circle cx="28" cy="34" r="3" fill="${ringColor}" opacity="0.6" />
+            <circle cx="112" cy="38" r="2.5" fill="${ringColor}" opacity="0.6" />
+            <circle cx="32" cy="108" r="2.5" fill="${ringColor}" opacity="0.5" />
+            <circle cx="108" cy="104" r="3.5" fill="${ringColor}" opacity="0.5" />
+          </svg>
+          <span class="absolute text-6xl sm:text-7xl select-none drop-shadow-sm">${emoji}</span>
+        </div>
+      `;
+    }
+
+    /*************************************************************************
+     * 7. RENDERING ALL UI COMPONENTS
+     *************************************************************************/
+    function renderAll() {
+      const wk = state.inspectedWeek;
+      const dayOff = state.inspectedDayOffset;
+      const data = WEEKS_DATA[wk];
+
+      const lmpDate = getLmpDate();
+      const conceptionDate = getDateForGestation(2, 0);
+      const eddDate = getEddDate();
+      const weekStartDate = getDateForGestation(wk, 0);
+      const weekEndDate = getDateForGestation(wk, 6);
+      const exactSelectedDate = getDateForGestation(wk, dayOff);
+      const anchorDateObj = parseDateStr(state.anchorDateStr);
+
+      // Total days completed & remaining
+      const totalDaysCompleted = (wk * 7) + dayOff;
+      const totalDaysRemaining = Math.max(0, 280 - totalDaysCompleted);
+      const remWeeks = Math.floor(totalDaysRemaining / 7);
+      const remDays = totalDaysRemaining % 7;
+      const pctComplete = Math.min(100, Math.max(0, (totalDaysCompleted / 280) * 100)).toFixed(1);
+
+      // Update Header Summary & Top Metric Cards
+      document.getElementById('header-anchor-summary').textContent =
+        `${state.anchorWeeks}w ${state.anchorDays}d on ${formatShortDate(anchorDateObj)}`;
+      document.getElementById('btn-jump-anchor').innerHTML =
+        `<i class="ph-fill ph-push-pin"></i><span>${formatCompactDate(anchorDateObj)} (${state.anchorWeeks}w ${state.anchorDays}d)</span>`;
+
+      document.getElementById('metric-edd').textContent = formatShortDate(eddDate);
+      document.getElementById('metric-inspected-age').textContent = `${wk} Weeks, ${dayOff} Days`;
+      document.getElementById('metric-inspected-date').textContent = formatShortDate(exactSelectedDate);
+      document.getElementById('metric-lmp').textContent = formatShortDate(lmpDate);
+      document.getElementById('metric-conception').textContent = `Conception: ~${formatMonthDayYear(conceptionDate)}`;
+      document.getElementById('metric-countdown').textContent =
+        totalDaysRemaining === 0 ? '🎉 Due Date!' : `${remWeeks}w ${remDays}d Left`;
+      document.getElementById('metric-progress-pct').textContent =
+        `${totalDaysRemaining} days to go • ${pctComplete}% done`;
+
+      // Update Slider & Trimester Pill
+      const slider = document.getElementById('week-slider');
+      if (Number(slider.value) !== wk) slider.value = wk;
+
+      const trimPill = document.getElementById('trimester-pill');
+      let trimesterNum = 1;
+      if (wk <= 13) {
+        trimesterNum = 1;
+        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-pink-100 text-berry border border-pink-300 shadow-sm';
+        trimPill.textContent = '🌱 1st Trimester (Weeks 1–13)';
+      } else if (wk <= 27) {
+        trimesterNum = 2;
+        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-amber-100 text-amber-800 border border-amber-300 shadow-sm';
+        trimPill.textContent = '✨ 2nd Trimester (Weeks 14–27)';
+      } else {
+        trimesterNum = 3;
+        trimPill.className = 'px-3.5 py-1 rounded-full text-xs font-display font-bold bg-purple-100 text-plum border border-purple-300 shadow-sm';
+        trimPill.textContent = '🧸 3rd Trimester (Weeks 28–40)';
+      }
+
+      // Render Day-within-Week Selector (+0d to +6d)
+      document.getElementById('day-selector-week-label').textContent = `(Week ${wk})`;
+      const dayPillsContainer = document.getElementById('day-pills-container');
+      dayPillsContainer.innerHTML = '';
+      for (let d = 0; d <= 6; d++) {
+        const dDate = getDateForGestation(wk, d);
+        const isSelected = d === dayOff;
+        const btn = document.createElement('button');
+        btn.onclick = () => setDayOffset(d);
+        btn.className = isSelected
+          ? 'btn-tactile py-2 px-1.5 rounded-xl bg-berry text-white font-display font-bold text-xs shadow-sm border border-berry flex flex-col items-center justify-center'
+          : 'btn-tactile py-2 px-1.5 rounded-xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex flex-col items-center justify-center';
+        btn.innerHTML = `
+          <span>${wk}w +${d}d</span>
+          <span class="text-[10px] ${isSelected ? 'text-pink-100' : 'text-slate-400'} font-sans">${formatCompactDate(dDate)}</span>
+        `;
+        dayPillsContainer.appendChild(btn);
+      }
+
+      // Render Quick-Jump Milestone Ribbon
+      const ribbon = document.getElementById('milestone-ribbon');
+      ribbon.innerHTML = '';
+      MILESTONE_CHIPS.forEach(chip => {
+        const chipDate = getDateForGestation(chip.week, chip.day);
+        const active = chip.week === wk;
+        const btn = document.createElement('button');
+        btn.onclick = () => {
+          setInspectWeek(chip.week, chip.day);
+          if (chip.week === 20 || chip.week === 40 || chip.week === 19) {
+            triggerConfettiBurst();
+          }
+        };
+        btn.className = active
+          ? 'btn-tactile shrink-0 px-3.5 py-2 rounded-2xl bg-gradient-to-r from-berry to-pink-500 text-white font-display font-bold text-xs shadow-md flex items-center gap-2 border border-pink-400'
+          : 'btn-tactile shrink-0 px-3.5 py-2 rounded-2xl bg-slate-50 hover:bg-pink-50 text-slate-700 font-display font-semibold text-xs border border-slate-200 flex items-center gap-2';
+        btn.innerHTML = `
+          <span class="text-base">${chip.icon}</span>
+          <div class="text-left leading-tight">
+            <div>${chip.label} <span class="opacity-75">(${chip.tag})</span></div>
+            <div class="text-[10px] ${active ? 'text-pink-100' : 'text-slate-400'} font-sans">${formatCompactDate(chipDate)}, ${chipDate.getUTCFullYear()}</div>
+          </div>
+        `;
+        ribbon.appendChild(btn);
+      });
+
+      // Render Left Column: Whimsical Size Showcase
+      const themeMap = {
+        produce: { item: data.produce, label: `At Week ${wk}, Baby is the size of a...` },
+        bakery: { item: data.bakery, label: `In the Sweet Bakery, Week ${wk} is a...` },
+        curiosity: { item: data.curiosity, label: `In Whimsical Curiosities, Week ${wk} is a...` }
+      };
+      const activeThemeObj = themeMap[state.comparisonTheme];
+
+      // Update theme buttons active state
+      ['produce', 'bakery', 'curiosity'].forEach(t => {
+        const el = document.getElementById(`theme-btn-${t}`);
+        if (t === state.comparisonTheme) {
+          el.className = 'btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 bg-white text-berry shadow-sm border border-pink-200';
+        } else {
+          el.className = 'btn-tactile py-2 px-2 rounded-xl font-display font-bold text-xs sm:text-sm flex items-center justify-center gap-1 text-slate-600 hover:text-berry';
+        }
+      });
+
+      document.getElementById('stage-week-badge').textContent = `Week ${wk}`;
+      document.getElementById('size-hero-visual').innerHTML = createWhimsicalBadgeSVG(activeThemeObj.item.emoji, wk);
+      document.getElementById('size-category-label').textContent = activeThemeObj.label;
+      document.getElementById('size-hero-title').textContent = activeThemeObj.item.name;
+      document.getElementById('size-hero-blurb').textContent =
+        `Patch: ${data.produce.name} • Bakery: ${data.bakery.name} • Whimsy: ${data.curiosity.name}`;
+
+      document.getElementById('trio-produce-emoji').textContent = data.produce.emoji;
+      document.getElementById('trio-produce-name').textContent = data.produce.name;
+      document.getElementById('trio-bakery-emoji').textContent = data.bakery.emoji;
+      document.getElementById('trio-bakery-name').textContent = data.bakery.name;
+      document.getElementById('trio-curiosity-emoji').textContent = data.curiosity.emoji;
+      document.getElementById('trio-curiosity-name').textContent = data.curiosity.name;
+
+      // Length & Weight Formatting
+      const inches = (data.lengthCm / 2.54).toFixed(1);
+      const oz = (data.weightG * 0.035274).toFixed(1);
+      const lbs = (data.weightG / 453.592).toFixed(2);
+
+      const lenPrimary = document.getElementById('measure-length-primary');
+      const lenSecondary = document.getElementById('measure-length-secondary');
+      const wtPrimary = document.getElementById('measure-weight-primary');
+      const wtSecondary = document.getElementById('measure-weight-secondary');
+
+      if (state.unitMode === 'imperial') {
+        lenPrimary.textContent = `${inches} in`;
+        lenSecondary.textContent = `${data.lengthCm} cm`;
+        wtPrimary.textContent = data.weightG >= 454 ? `${lbs} lbs` : `${oz} oz`;
+        wtSecondary.textContent = data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`;
+      } else {
+        lenPrimary.textContent = `${data.lengthCm} cm`;
+        lenSecondary.textContent = `~${inches} inches ${wk < 14 ? '(crown-rump)' : '(crown-heel)'}`;
+        wtPrimary.textContent = data.weightG >= 1000 ? `${(data.weightG / 1000).toFixed(2)} kg` : `${data.weightG} g`;
+        wtSecondary.textContent = data.weightG >= 454 ? `~${lbs} lbs (${oz} oz)` : `~${oz} oz`;
+      }
+
+      // Render Relative Scale Visualizer
+      document.getElementById('scale-curr-wk').textContent = wk;
+      const compareSelect = document.getElementById('compare-week-select');
+      const compareWk = Number(compareSelect.value) || 12;
+      const compareData = WEEKS_DATA[compareWk];
+
+      // Max visual diameter = 144px (for 51.2 cm at Week 40)
+      const maxPx = 144;
+      const currPx = Math.max(14, Math.round((data.lengthCm / 51.2) * maxPx));
+      const compPx = Math.max(12, Math.round((compareData.lengthCm / 51.2) * maxPx));
+
+      const currCircle = document.getElementById('scale-current-circle');
+      currCircle.style.width = `${currPx}px`;
+      currCircle.style.height = `${currPx}px`;
+      document.getElementById('scale-circle-emoji').textContent = activeThemeObj.item.emoji;
+      document.getElementById('scale-circle-emoji').style.fontSize = currPx < 28 ? '11px' : '18px';
+
+      const compCircle = document.getElementById('scale-compare-circle');
+      compCircle.style.width = `${compPx}px`;
+      compCircle.style.height = `${compPx}px`;
+
+      const lengthRatio = compareData.lengthCm > 0 ? (data.lengthCm / compareData.lengthCm).toFixed(1) : '1.0';
+      document.getElementById('scale-comparison-caption').innerHTML =
+        `Week <strong>${wk}</strong> (${data.lengthCm} cm, ${data.weightG}g) vs. Week <strong>${compareWk}</strong> (${compareData.lengthCm} cm, ${compareData.weightG}g) — <strong>${lengthRatio}x</strong> the length!`;
+
+      // Render Right Column: Calendar & Milestone Details
+      document.querySelectorAll('.inspected-wk-num').forEach(el => el.textContent = wk);
+      document.getElementById('detail-week-badge').textContent = `Week ${wk}, Day ${dayOff}`;
+      const pregMonth = Math.min(9, Math.ceil(wk / 4.3));
+      document.getElementById('detail-Month-pill').textContent = `Month ${pregMonth} • Trimester ${trimesterNum}`;
+
+      const specialTag = document.getElementById('detail-special-tag');
+      if (wk === state.anchorWeeks && dayOff === state.anchorDays) {
+        specialTag.className = 'px-3 py-1 rounded-xl bg-amber-100 text-amber-800 font-display font-bold text-xs border border-amber-300';
+        specialTag.textContent = `⭐ Reference Anchor (${formatCompactDate(anchorDateObj)})`;
+      } else if (wk === 20) {
+        specialTag.className = 'px-3 py-1 rounded-xl bg-pink-100 text-berry font-display font-bold text-xs border border-pink-300';
+        specialTag.textContent = '🎉 Halfway Milestone!';
+      } else if (wk === 40) {
+        specialTag.className = 'px-3 py-1 rounded-xl bg-purple-100 text-plum font-display font-bold text-xs border border-purple-300';
+        specialTag.textContent = '🎂 Expected Due Date Week!';
+      } else {
+        specialTag.className = 'px-3 py-1 rounded-xl bg-slate-100 text-slate-600 font-display font-semibold text-xs border border-slate-200';
+        specialTag.textContent = `Selected: ${formatShortDate(exactSelectedDate)}`;
+      }
+
+      document.getElementById('detail-week-Dates').textContent =
+        `${formatShortDate(weekStartDate)} – ${formatShortDate(weekEndDate)}`;
+
+      document.getElementById('detail-days-elapsed').textContent =
+        `Day ${totalDaysCompleted} of 280 (${pctComplete}% complete)`;
+      document.getElementById('detail-days-remaining').textContent =
+        totalDaysRemaining === 0
+          ? `🎂 Expected Due Date (${formatShortDate(eddDate)})!`
+          : `${remWeeks}w ${remDays}d (${totalDaysRemaining} days) until ${formatShortDate(eddDate)}`;
+      document.getElementById('detail-progress-bar').style.width = `${pctComplete}%`;
+
+      // Developmental Milestones List
+      document.getElementById('detail-dev-subtitle').textContent = data.subtitle;
+      const listEl = document.getElementById('detail-milestones-list');
+      listEl.innerHTML = '';
+      const bulletIcons = ['✨', '🌱', '💫'];
+      data.milestones.forEach((mText, i) => {
+        const li = document.createElement('li');
+        li.className = 'flex items-start gap-3 p-3.5 rounded-2xl bg-pink-50/40 border border-pink-100/80 text-slate-700 text-xs sm:text-sm leading-relaxed';
+        li.innerHTML = `
+          <span class="w-6 h-6 rounded-full bg-white border border-pink-200 flex items-center justify-center text-xs shrink-0 shadow-sm mt-0.5">${bulletIcons[i % bulletIcons.length]}</span>
+          <span>${mText}</span>
+        `;
+        listEl.appendChild(li);
+      });
+
+      // Care & Wonder Cards
+      document.getElementById('detail-care-title').textContent = data.careTitle;
+      document.getElementById('detail-care-body').textContent = data.careBody;
+      document.getElementById('detail-care-tag').textContent = data.careTag;
+
+      document.getElementById('detail-wonder-title').textContent = data.wonderTitle;
+      document.getElementById('detail-wonder-body').textContent = data.wonderBody;
+      document.getElementById('detail-wonder-tag').textContent = data.wonderTag;
+
+      // Render Interactive 40-Week Growth Curve SVG
+      renderGrowthChart();
+    }
+
+    /*************************************************************************
+     * 8. INTERACTIVE 40-WEEK GROWTH CURVE SVG
+     *************************************************************************/
+    function renderGrowthChart() {
+      const svg = document.getElementById('growth-chart-svg');
+      const mode = state.chartMode;
+      const maxVal = mode === 'length' ? 55 : 3600;
+      const unit = mode === 'length' ? 'cm' : 'g';
+
+      const padL = 45;
+      const padR = 25;
+      const padT = 22;
+      const padB = 32;
+      const width = 800;
+      const height = 210;
+      const plotW = width - padL - padR;
+      const plotH = height - padT - padB;
+
+      function getX(wk) {
+        return padL + ((wk - 1) / 39) * plotW;
+      }
+      function getY(val) {
+        return padT + plotH - (val / maxVal) * plotH;
+      }
+
+      // Build smooth path points
+      const pts = [];
+      for (let w = 1; w <= 40; w++) {
+        const val = mode === 'length' ? WEEKS_DATA[w].lengthCm : WEEKS_DATA[w].weightG;
+        pts.push({ w, val, x: getX(w), y: getY(val) });
+      }
+
+      const pathD = pts.map((p, idx) => `${idx === 0 ? 'M' : 'L'} ${p.x.toFixed(1)} ${p.y.toFixed(1)}`).join(' ');
+      const areaD = `${pathD} L ${pts[pts.length - 1].x.toFixed(1)} ${padT + plotH} L ${pts[0].x.toFixed(1)} ${padT + plotH} Z`;
+
+      const currPt = pts[state.inspectedWeek - 1];
+      const strokeColor = mode === 'length' ? '#E05780' : '#805AD5';
+      const fillId = mode === 'length' ? 'gradLength' : 'gradWeight';
+
+      let html = `
+        <defs>
+          <linearGradient id="gradLength" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#E05780" stop-opacity="0.32"/>
+            <stop offset="100%" stop-color="#E05780" stop-opacity="0.02"/>
+          </linearGradient>
+          <linearGradient id="gradWeight" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#805AD5" stop-opacity="0.32"/>
+            <stop offset="100%" stop-color="#805AD5" stop-opacity="0.02"/>
+          </linearGradient>
+        </defs>
+      `;
+
+      // Horizontal grid lines
+      [0, 0.25, 0.5, 0.75, 1].forEach(frac => {
+        const y = padT + plotH * (1 - frac);
+        const labelVal = Math.round(maxVal * frac);
+        html += `
+          <line x1="${padL}" y1="${y}" x2="${width - padR}" y2="${y}" stroke="#F1F5F9" stroke-width="1.5" />
+          <text x="${padL - 8}" y="${y + 4}" text-anchor="end" fill="#94A3B8" font-size="10" font-weight="700">${labelVal}${unit}</text>
+        `;
+      });
+
+      // Trimester dividers
+      [14, 28].forEach(tw => {
+        const tx = getX(tw);
+        html += `
+          <line x1="${tx}" y1="${padT}" x2="${tx}" y2="${padT + plotH}" stroke="#CBD5E1" stroke-dasharray="4 4" stroke-width="1.5" />
+          <text x="${tx + 4}" y="${padT + 10}" fill="#94A3B8" font-size="9" font-weight="700">Wk ${tw}</text>
+        `;
+      });
+
+      // Area & Line Path
+      html += `
+        <path d="${areaD}" fill="url(#${fillId})" />
+        <path d="${pathD}" fill="none" stroke="${strokeColor}" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" />
+      `;
+
+      // Vertical highlight on inspected week
+      html += `
+        <line x1="${currPt.x}" y1="${padT}" x2="${currPt.x}" y2="${padT + plotH}" stroke="${strokeColor}" stroke-width="2" stroke-dasharray="3 3" />
+      `;
+
+      // Interactive Dots for all 40 weeks
+      pts.forEach(p => {
+        const isCurrent = p.w === state.inspectedWeek;
+        const isAnchor = p.w === state.anchorWeeks;
+        const r = isCurrent ? 7 : isAnchor ? 4.5 : 3;
+        const dotFill = isCurrent ? '#FFFFFF' : strokeColor;
+        const dotStroke = isCurrent ? strokeColor : '#FFFFFF';
+        const showWeekLabel = p.w === 1 || p.w % 5 === 0 || p.w === 19;
+
+        html += `
+          <g class="cursor-pointer" onclick="setInspectWeek(${p.w})">
+            <rect x="${p.x - 8}" y="${padT}" width="16" height="${plotH}" fill="transparent" />
+            <circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${dotFill}" stroke="${dotStroke}" stroke-width="${isCurrent ? 3.5 : 1.5}" />
+            ${showWeekLabel ? `<text x="${p.x}" y="${height - 8}" text-anchor="middle" fill="${isCurrent ? '#E05780' : '#64748B'}" font-size="10" font-weight="${isCurrent ? '800' : '600'}">W${p.w}</text>` : ''}
+          </g>
+        `;
+      });
+
+      // Floating Tooltip Badge on Inspected Week
+      const tooltipW = 136;
+      const tooltipX = Math.min(width - padR - tooltipW, Math.max(padL, currPt.x - tooltipW / 2));
+      const tooltipY = Math.max(padT, currPt.y - 42);
+      const wData = WEEKS_DATA[state.inspectedWeek];
+
+      html += `
+        <g transform="translate(${tooltipX}, ${tooltipY})" class="pointer-events-none">
+          <rect width="${tooltipW}" height="28" rx="10" fill="#2D232E" opacity="0.92" />
+          <text x="${tooltipW / 2}" y="18" text-anchor="middle" fill="#FFFFFF" font-size="11" font-weight="700">
+            ${wData.produce.emoji} Wk ${state.inspectedWeek}: ${currPt.val} ${unit}
+          </text>
+        </g>
+      `;
+
+      svg.innerHTML = html;
+    }
+
+    /*************************************************************************
+     * 9. USER INTERACTION CONTROLLERS
+     *************************************************************************/
+    function onWeekSliderInput(val) {
+      state.inspectedWeek = Number(val);
+      playPopSound();
+      renderAll();
+    }
+
+    function setInspectWeek(wk, dayOffset = state.inspectedDayOffset) {
+      state.inspectedWeek = Math.min(40, Math.max(1, Number(wk)));
+      state.inspectedDayOffset = Math.min(6, Math.max(0, Number(dayOffset)));
+      playPopSound();
+      renderAll();
+    }
+
+    function stepWeek(delta) {
+      stopAutoPlay();
+      const next = Math.min(40, Math.max(1, state.inspectedWeek + delta));
+      setInspectWeek(next, state.inspectedDayOffset);
+    }
+
+    function setDayOffset(d) {
+      state.inspectedDayOffset = d;
+      playPopSound(1.1);
+      renderAll();
+    }
+
+    function setComparisonTheme(theme) {
+      state.comparisonTheme = theme;
+      playPopSound(1.15);
+      renderAll();
+    }
+
+    function setChartMode(mode) {
+      state.chartMode = mode;
+      const btnLen = document.getElementById('chart-mode-length');
+      const btnWt = document.getElementById('chart-mode-weight');
+      if (mode === 'length') {
+        btnLen.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-berry shadow-sm';
+        btnWt.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-plum';
+      } else {
+        btnWt.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs bg-white text-plum shadow-sm';
+        btnLen.className = 'px-3.5 py-1.5 rounded-xl font-display font-bold text-xs text-slate-600 hover:text-berry';
+      }
+      playPopSound();
+      renderGrowthChart();
+    }
+
+    function toggleUnits() {
+      state.unitMode = state.unitMode === 'both' ? 'imperial' : 'both';
+      document.getElementById('unit-toggle-btn').textContent =
+        state.unitMode === 'imperial' ? 'Showing: US First' : 'Showing: Metric + US';
+      playPopSound();
+      renderAll();
+    }
+
+    function jumpToAnchorWeek() {
+      stopAutoPlay();
+      setInspectWeek(state.anchorWeeks, state.anchorDays);
+      triggerConfettiBurst();
+    }
+
+    function jumpToLiveToday() {
+      stopAutoPlay();
+      const now = new Date();
+      const todayUTC = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate(), 12, 0, 0));
+      const lmp = getLmpDate();
+      const diffDays = Math.round((todayUTC - lmp) / (1000 * 60 * 60 * 24));
+
+      if (diffDays >= 7 && diffDays <= 286) {
+        const wk = Math.min(40, Math.max(1, Math.floor(diffDays / 7)));
+        const dOff = diffDays % 7;
+        setInspectWeek(wk, dOff);
+      } else {
+        // Fallback to anchor week 19w 0d if outside window
+        setInspectWeek(state.anchorWeeks, state.anchorDays);
+      }
+      playCelebrationChime();
+    }
+
+    function toggleTimingDrawer() {
+      const drawer = document.getElementById('timing-drawer');
+      drawer.classList.toggle('hidden');
+      playPopSound();
+    }
+
+    function updateCustomCalibration() {
+      const dateVal = document.getElementById('input-ref-date').value || '2026-10-13';
+      const wksVal = Math.min(40, Math.max(1, Number(document.getElementById('input-ref-weeks').value) || 19));
+      const daysVal = Math.min(6, Math.max(0, Number(document.getElementById('input-ref-days').value) || 0));
+
+      state.anchorDateStr = dateVal;
+      state.anchorWeeks = wksVal;
+      state.anchorDays = daysVal;
+      state.inspectedWeek = wksVal;
+      state.inspectedDayOffset = daysVal;
+      playPopSound();
+      renderAll();
+    }
+
+    function resetToDefaultCalibration() {
+      document.getElementById('input-ref-date').value = '2026-10-13';
+      document.getElementById('input-ref-weeks').value = 19;
+      document.getElementById('input-ref-days').value = 0;
+      state.anchorDateStr = '2026-10-13';
+      state.anchorWeeks = 19;
+      state.anchorDays = 0;
+      state.inspectedWeek = 19;
+      state.inspectedDayOffset = 0;
+      playCelebrationChime();
+      renderAll();
+    }
+
+    // Auto-Play Story Mode
+    function toggleAutoPlay() {
+      if (state.autoPlayTimer) {
+        stopAutoPlay();
+      } else {
+        if (state.inspectedWeek >= 40) state.inspectedWeek = 1;
+        document.getElementById('autoplay-icon').className = 'ph-fill ph-pause';
+        document.getElementById('autoplay-text').textContent = 'Pause Story';
+        state.autoPlayTimer = setInterval(() => {
+          if (state.inspectedWeek < 40) {
+            state.inspectedWeek++;
+            playPopSound();
+            renderAll();
+            if (state.inspectedWeek === 20 || state.inspectedWeek === 40) {
+              triggerConfettiBurst();
+            }
+          } else {
+            stopAutoPlay();
+          }
+        }, 1250);
+      }
+    }
+
+    function stopAutoPlay() {
+      if (state.autoPlayTimer) {
+        clearInterval(state.autoPlayTimer);
+        state.autoPlayTimer = null;
+      }
+      document.getElementById('autoplay-icon').className = 'ph-fill ph-play';
+      document.getElementById('autoplay-text').textContent = 'Auto-Play Story';
+    }
+
+    /*************************************************************************
+     * 10. CELEBRATION CONFETTI ENGINE
+     *************************************************************************/
+    const confettiParticles = [];
+    let confettiAnimId = null;
+
+    function triggerConfettiBurst() {
+      playCelebrationChime();
+      const canvas = document.getElementById('confetti-canvas');
+      const ctx = canvas.getContext('2d');
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+
+      const colors = ['#E05780', '#FF9EBB', '#F4A261', '#9F7AEA', '#52B788', '#FFD166'];
+      for (let i = 0; i < 65; i++) {
+        confettiParticles.push({
+          x: window.innerWidth * 0.5 + (Math.random() - 0.5) * 240,
+          y: window.innerHeight * 0.35,
+          vx: (Math.random() - 0.5) * 13,
+          vy: -Math.random() * 12 - 4,
+          size: Math.random() * 8 + 5,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          rotation: Math.random() * 360,
+          vRot: (Math.random() - 0.5) * 10,
+          alpha: 1
+        });
+      }
+
+      if (!confettiAnimId) {
+        function animateConfetti() {
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+          for (let i = confettiParticles.length - 1; i >= 0; i--) {
+            const p = confettiParticles[i];
+            p.x += p.vx;
+            p.y += p.vy;
+            p.vy += 0.35; // gravity
+            p.rotation += p.vRot;
+            p.alpha -= 0.012;
+
+            if (p.alpha <= 0 || p.y > canvas.height + 20) {
+              confettiParticles.splice(i, 1);
+              continue;
+            }
+
+            ctx.save();
+            ctx.globalAlpha = Math.max(0, p.alpha);
+            ctx.translate(p.x, p.y);
+            ctx.rotate((p.rotation * Math.PI) / 180);
+            ctx.fillStyle = p.color;
+            ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size * 0.65);
+            ctx.restore();
+          }
+
+          if (confettiParticles.length > 0) {
+            confettiAnimId = requestAnimationFrame(animateConfetti);
+          } else {
+            confettiAnimId = null;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+          }
+        }
+        confettiAnimId = requestAnimationFrame(animateConfetti);
+      }
+    }
+
+    /*************************************************************************
+     * 11. INITIALIZATION & KEYBOARD NAVIGATION
+     *************************************************************************/
+    window.addEventListener('DOMContentLoaded', () => {
+      // Populate Compare Week Dropdown (1 to 40, default Week 12)
+      const compSelect = document.getElementById('compare-week-select');
+      for (let w = 1; w <= 40; w++) {
+        const opt = document.createElement('option');
+        opt.value = w;
+        opt.textContent = `Week ${w} (${WEEKS_DATA[w].produce.emoji} ${WEEKS_DATA[w].lengthCm} cm)`;
+        if (w === 12) opt.selected = true;
+        compSelect.appendChild(opt);
+      }
+
+      // Keyboard Left / Right arrow support for scrubbing weeks
+      window.addEventListener('keydown', (e) => {
+        if (['INPUT', 'SELECT', 'TEXTAREA'].includes(document.activeElement?.tagName)) return;
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          stepWeek(-1);
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          stepWeek(1);
+        }
+      });
+
+      // Initial render at Week 19, Day 0 (Tue, Oct 13, 2026 -> Due Date: Tue, Mar 9, 2027)
+      renderAll();
+    });
+  </script>
+</body>
+</html>
